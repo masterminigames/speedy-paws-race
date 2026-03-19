@@ -1,0 +1,128 @@
+import { useState, useEffect, useRef } from 'react';
+import { SetupScreen } from '@/components/SetupScreen';
+import { RaceTrack } from '@/components/RaceTrack';
+import { ResultModal } from '@/components/ResultModal';
+import { Footer } from '@/components/Footer';
+import { useRaceGame } from '@/hooks/useRaceGame';
+import { Animal, PenaltySettings } from '@/types/game';
+import { Button } from '@/components/ui/button';
+
+const Index = () => {
+  const {
+    playerCount,
+    setPlayerCount,
+    players,
+    gamePhase,
+    countdown,
+    elapsedTime,
+    initializePlayers,
+    startCountdown,
+    resetGame,
+    replayGame,
+    penaltySettings,
+    setPenaltySettings,
+    stoneEventEnabled,
+    stoneAppeared,
+    stoneTargetPlayerId,
+  } = useRaceGame();
+
+  const [showResultModal, setShowResultModal] = useState(false);
+  const hasShownModal = useRef(false);
+
+  const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
+    hasShownModal.current = false;
+    setPenaltySettings(penalty);
+    initializePlayers(playerCount, selectedAnimals, penalty);
+    setTimeout(() => {
+      startCountdown();
+    }, 100);
+  };
+
+  // Show result modal when race finishes (only once)
+  useEffect(() => {
+    if (gamePhase === 'finished' && !hasShownModal.current && players.length > 0) {
+      hasShownModal.current = true;
+      const timer = setTimeout(() => setShowResultModal(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [gamePhase, players.length]);
+
+  const handleRestart = () => {
+    setShowResultModal(false);
+    hasShownModal.current = false;
+    resetGame();
+  };
+
+  const handleReplay = () => {
+    setShowResultModal(false);
+    hasShownModal.current = false;
+    replayGame();
+  };
+
+  const handleCloseModal = () => {
+    setShowResultModal(false);
+  };
+
+  if (gamePhase === 'setup') {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1">
+          <SetupScreen
+            playerCount={playerCount}
+            setPlayerCount={setPlayerCount}
+            onStart={handleStart}
+          />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1">
+        <RaceTrack
+          players={players}
+          gamePhase={gamePhase}
+          countdown={countdown}
+          elapsedTime={elapsedTime}
+          onStartRace={startCountdown}
+          penaltyRanks={penaltySettings.penaltyRanks}
+          stoneEventEnabled={stoneEventEnabled}
+          stoneAppeared={stoneAppeared}
+          stoneTargetPlayerId={stoneTargetPlayerId}
+        />
+        <ResultModal
+          open={showResultModal}
+          onClose={handleCloseModal}
+          onRestart={handleRestart}
+          onReplay={handleReplay}
+          players={players}
+          penaltyRanks={penaltySettings.penaltyRanks}
+        />
+        {gamePhase === 'finished' && !showResultModal && (
+          <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 flex gap-3">
+            <Button
+              onClick={handleReplay}
+              size="lg"
+              className="text-lg px-8 py-4 rounded-2xl shadow-button"
+            >
+              🔄 다시 시작
+            </Button>
+            <Button
+              onClick={handleRestart}
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-4 rounded-2xl"
+            >
+              🏠 첫화면으로
+            </Button>
+          </div>
+        )}
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default Index;
