@@ -27,7 +27,7 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
       {/* Header */}
       <div className="text-center mb-4">
         <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">
-          🏃 동물 달리기 경주 🏃
+          🐶 커피 달리기 경주 🐱
         </h1>
         <div className="text-lg text-muted-foreground">
           {gamePhase === 'racing' && (
