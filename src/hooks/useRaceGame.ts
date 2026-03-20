@@ -135,12 +135,12 @@ export function useRaceGame() {
       setPlayers(prev => {
         const activePlayers = prev.filter(p => !p.finished);
         
-        // 돌멩이 나타남 체크 (1등이 80% 지점 도달하면) - Ref 사용!
+        // 돌멩이 나타남 체크 (1등이 75% 지점 도달하면) - Ref 사용!
         if (stoneEventEnabledRef.current && !stoneAppearedRef.current && activePlayers.length > 0) {
-          const leadersAt80 = activePlayers.filter(p => p.position >= 80);
-          if (leadersAt80.length > 0) {
-            // 80% 지점의 1등을 찾아서 저장
-            const leader = leadersAt80.reduce((max, p) => p.position > max.position ? p : max, leadersAt80[0]);
+          const leadersAt75 = activePlayers.filter(p => p.position >= 75);
+          if (leadersAt75.length > 0) {
+            // 75% 지점의 1등을 찾아서 저장
+            const leader = leadersAt75.reduce((max, p) => p.position > max.position ? p : max, leadersAt75[0]);
             stoneTargetPlayerIdRef.current = leader.id;
             stoneAppearedRef.current = true;
             

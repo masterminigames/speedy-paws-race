@@ -194,7 +194,7 @@ const HowToPlay = () => {
                 <p>돌멩이 이벤트는 다음과 같이 진행됩니다:</p>
                 <ol className="list-decimal list-inside space-y-2 text-sm">
                   <li>게임 시작 시 <strong>50% 확률</strong>로 돌멩이 이벤트 활성화 여부 결정</li>
-                  <li>선두 캐릭터가 <strong>80% 지점</strong>을 통과하는 순간 이벤트 발동</li>
+                  <li>선두 캐릭터가 <strong>75% 지점</strong>을 통과하는 순간 이벤트 발동</li>
                   <li><strong>85% 지점</strong>에 돌멩이가 모든 레인에 동시 등장</li>
                   <li>돌멩이를 처음 밟은 선두 캐릭터가 <strong>90도 회전하며 넘어짐</strong></li>
                   <li>넘어진 캐릭터는 <strong>87% 지점에서 정지</strong>, 이후 캐릭터들이 추월 가능</li>
