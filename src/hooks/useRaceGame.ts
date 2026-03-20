@@ -15,7 +15,7 @@ const BOOST_ZONE_START = 0;          // 버프 구간 시작 (0%)
 const BOOST_ZONE_END = 85;           // 버프 구간 종료 (85%)
 
 // 돌멩이 이벤트 설정
-const STONE_EVENT_PROBABILITY = 0.4; // 40% 확률
+const STONE_EVENT_PROBABILITY = 0.5; // 50% 확률
 const STONE_APPEAR_POSITION = 80;    // 80% 지점에서 돌멩이 나타남
 const STONE_POSITION = 85;           // 85% 지점에서 충돌
 
@@ -82,7 +82,7 @@ export function useRaceGame() {
     setStoneAppeared(false);
     setStoneTargetPlayerId(null);
     
-    console.log('🎲 돌멩이 이벤트:', stoneEnabled ? '활성화 (40%)' : '비활성화');
+    console.log('🎲 돌멩이 이벤트:', stoneEnabled ? '활성화 (50%)' : '비활성화');
     
     // 각 플레이어의 버프 상태 초기화
     const boostStates = new Map<number, PlayerBoostState>();
@@ -135,12 +135,12 @@ export function useRaceGame() {
       setPlayers(prev => {
         const activePlayers = prev.filter(p => !p.finished);
         
-        // 돌멩이 나타남 체크 (1등이 82% 지점 도달하면) - Ref 사용!
+        // 돌멩이 나타남 체크 (1등이 80% 지점 도달하면) - Ref 사용!
         if (stoneEventEnabledRef.current && !stoneAppearedRef.current && activePlayers.length > 0) {
-          const leadersAt82 = activePlayers.filter(p => p.position >= 82);
-          if (leadersAt82.length > 0) {
-            // 82% 지점의 1등을 찾아서 저장
-            const leader = leadersAt82.reduce((max, p) => p.position > max.position ? p : max, leadersAt82[0]);
+          const leadersAt80 = activePlayers.filter(p => p.position >= 80);
+          if (leadersAt80.length > 0) {
+            // 80% 지점의 1등을 찾아서 저장
+            const leader = leadersAt80.reduce((max, p) => p.position > max.position ? p : max, leadersAt80[0]);
             stoneTargetPlayerIdRef.current = leader.id;
             stoneAppearedRef.current = true;
             

@@ -156,7 +156,7 @@ const HowToPlay = () => {
                   <li><strong>붉은색 강조</strong>: 현재 벌칙 대상 순위</li>
                 </ul>
                 <div className="bg-muted rounded-lg p-4 text-sm">
-                  🪨 <strong>주의:</strong> 40% 확률로 후반부에 돌멩이가 등장합니다!
+                  🪨 <strong>주의:</strong> 50% 확률로 후반부에 돌멩이가 등장합니다!
                   선두를 달리던 캐릭터가 돌멩이에 걸려 넘어지는 극적인 반전이 일어날 수 있어요.
                 </div>
               </div>
@@ -193,8 +193,8 @@ const HowToPlay = () => {
               <div className="space-y-3 text-foreground/80 leading-relaxed">
                 <p>돌멩이 이벤트는 다음과 같이 진행됩니다:</p>
                 <ol className="list-decimal list-inside space-y-2 text-sm">
-                  <li>게임 시작 시 <strong>40% 확률</strong>로 돌멩이 이벤트 활성화 여부 결정</li>
-                  <li>선두 캐릭터가 <strong>82% 지점</strong>을 통과하는 순간 이벤트 발동</li>
+                  <li>게임 시작 시 <strong>50% 확률</strong>로 돌멩이 이벤트 활성화 여부 결정</li>
+                  <li>선두 캐릭터가 <strong>80% 지점</strong>을 통과하는 순간 이벤트 발동</li>
                   <li><strong>85% 지점</strong>에 돌멩이가 모든 레인에 동시 등장</li>
                   <li>돌멩이를 처음 밟은 선두 캐릭터가 <strong>90도 회전하며 넘어짐</strong></li>
                   <li>넘어진 캐릭터는 <strong>87% 지점에서 정지</strong>, 이후 캐릭터들이 추월 가능</li>
@@ -230,7 +230,7 @@ const HowToPlay = () => {
                 },
                 {
                   q: '돌멩이 이벤트가 매번 발생하나요?',
-                  a: '아니요, 40% 확률로만 발생합니다. 게임 시작 시 랜덤으로 결정되며, 60%의 경우에는 돌멩이 없이 깔끔하게 경주가 진행됩니다.',
+                  a: '아니요, 50% 확률로만 발생합니다. 게임 시작 시 랜덤으로 결정되며, 50%의 경우에는 돌멩이 없이 깔끔하게 경주가 진행됩니다.',
                 },
               ].map((item) => (
                 <div key={item.q} className="bg-card rounded-xl p-6 border border-border space-y-2">
