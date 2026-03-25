@@ -50,7 +50,7 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
           {penaltyPlayers.length > 0 && (
             <div className="space-y-3">
               <h4 className="font-semibold text-center text-destructive flex items-center justify-center gap-2">
-                💣 벌칙 당첨자 💣
+                {isPileOn ? '☠️ 혼자 내는자 ☠️' : '💣 벌칙 당첨자 💣'}
               </h4>
               <div className="flex flex-wrap justify-center gap-3">
                 {penaltyPlayers.map(player => (
@@ -60,7 +60,7 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
                   >
                     <div className="text-4xl mb-2">{player.animal.emoji}</div>
                     <div className="text-destructive font-bold flex items-center justify-center gap-1">
-                      💣 {player.rank}등
+                      {isPileOn ? '☠️' : '💣'} {player.rank}등
                     </div>
                     <div className="text-muted-foreground text-sm">플레이어 {player.id}</div>
                   </div>
@@ -105,7 +105,7 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
                         {player.rank === 2 && '🥈'}
                         {player.rank === 3 && '🥉'}
                         {(player.rank || 0) > 3 && `${player.rank}등`}
-                        {penaltyRanks.includes(player.rank || 0) && <span>💣</span>}
+                        {penaltyRanks.includes(player.rank || 0) && <span>{isPileOn ? '☠️' : '💣'}</span>}
                       </span>
                     </div>
                   ))}
