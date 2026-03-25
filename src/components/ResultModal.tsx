@@ -17,9 +17,12 @@ interface ResultModalProps {
   onReplay: () => void;
   players: Player[];
   penaltyRanks: number[];
+  isPileOn?: boolean;
+  onPileOn?: () => void;
+  originalPenaltyCount?: number;
 }
 
-export function ResultModal({ open, onClose, onRestart, onReplay, players, penaltyRanks }: ResultModalProps) {
+export function ResultModal({ open, onClose, onRestart, onReplay, players, penaltyRanks, isPileOn = false, onPileOn, originalPenaltyCount = 0 }: ResultModalProps) {
   const sortedPlayers = [...players].sort((a, b) => (a.rank || 0) - (b.rank || 0));
   const penaltyPlayers = sortedPlayers.filter(p => penaltyRanks.includes(p.rank || 0));
   
@@ -37,7 +40,9 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md mx-auto bg-card border-0 rounded-3xl shadow-modal">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-center">🏆 경주 결과 🏆</DialogTitle>
+          <DialogTitle className="text-2xl text-center">
+            {isPileOn ? '🔥 몰아주기 결과 🔥' : '🏆 경주 결과 🏆'}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -61,6 +66,19 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* 몰아주기 버튼 - 벌칙 인원 2명 이상이고, 아직 몰아주기 전일 때 */}
+          {!isPileOn && originalPenaltyCount >= 2 && penaltyPlayers.length >= 2 && onPileOn && (
+            <div className="flex justify-center">
+              <Button
+                onClick={onPileOn}
+                size="lg"
+                className="rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-3 text-lg shadow-lg"
+              >
+                🔥 몰아주기 🔥
+              </Button>
             </div>
           )}
 

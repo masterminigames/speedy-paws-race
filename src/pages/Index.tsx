@@ -21,6 +21,8 @@ const Index = () => {
     replayGame,
     penaltySettings,
     setPenaltySettings,
+    isPileOn,
+    startPileOnRace,
     stoneEventEnabled,
     stoneAppeared,
     stoneTargetPlayerId,
@@ -28,9 +30,11 @@ const Index = () => {
 
   const [showResultModal, setShowResultModal] = useState(false);
   const hasShownModal = useRef(false);
+  const originalPenaltyCountRef = useRef(0);
 
   const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
     hasShownModal.current = false;
+    originalPenaltyCountRef.current = penalty.penaltyCount;
     setPenaltySettings(penalty);
     initializePlayers(playerCount, selectedAnimals, penalty);
     setTimeout(() => {
@@ -61,6 +65,17 @@ const Index = () => {
 
   const handleCloseModal = () => {
     setShowResultModal(false);
+  };
+
+  const handlePileOn = () => {
+    // 현재 벌칙 대상자들의 ID 추출
+    const penaltyPlayerIds = players
+      .filter(p => penaltySettings.penaltyRanks.includes(p.rank || 0))
+      .map(p => p.id);
+
+    setShowResultModal(false);
+    hasShownModal.current = false;
+    startPileOnRace(penaltyPlayerIds);
   };
 
   if (gamePhase === 'setup') {
@@ -99,6 +114,9 @@ const Index = () => {
           onReplay={handleReplay}
           players={players}
           penaltyRanks={penaltySettings.penaltyRanks}
+          isPileOn={isPileOn}
+          onPileOn={handlePileOn}
+          originalPenaltyCount={originalPenaltyCountRef.current}
         />
         {gamePhase === 'finished' && !showResultModal && (
           <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 flex gap-3">

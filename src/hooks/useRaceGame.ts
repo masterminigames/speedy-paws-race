@@ -48,6 +48,10 @@ export function useRaceGame() {
   const stoneAppearedRef = useRef<boolean>(false);
   const stoneTargetPlayerIdRef = useRef<number | null>(null);
   
+  // 몰아주기 상태
+  const [isPileOn, setIsPileOn] = useState(false);
+  const originalPlayersRef = useRef<Player[]>([]);
+
   // RaceTrack에 전달할 state (렌더링 트리거용)
   const [stoneEventEnabled, setStoneEventEnabled] = useState(false);
   const [stoneAppeared, setStoneAppeared] = useState(false);
@@ -104,21 +108,6 @@ export function useRaceGame() {
       });
     });
     boostStatesRef.current = boostStates;
-  }, []);
-
-  const startCountdown = useCallback(() => {
-    setGamePhase('countdown');
-    setCountdown(3);
-    
-    let count = 3;
-    const countdownInterval = setInterval(() => {
-      count--;
-      setCountdown(count);
-      if (count <= 0) {
-        clearInterval(countdownInterval);
-        startRace();
-      }
-    }, 1000);
   }, []);
 
   const startRace = useCallback(() => {
@@ -268,6 +257,98 @@ export function useRaceGame() {
     }, UPDATE_INTERVAL);
   }, []);
 
+  const startCountdown = useCallback(() => {
+    setGamePhase('countdown');
+    setCountdown(3);
+
+    let count = 3;
+    const countdownInterval = setInterval(() => {
+      count--;
+      setCountdown(count);
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        startRace();
+      }
+    }, 1000);
+  }, [startRace]);
+
+  const startPileOnRace = useCallback((penaltyPlayerIds: number[]) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    setIsPileOn(true);
+
+    setPlayers(prev => {
+      // 원본 플레이어 저장 (몰아주기 후 복원용은 아니지만 참조용)
+      originalPlayersRef.current = prev;
+
+      // 벌칙 대상자만 추출 후 리셋
+      const pileOnPlayers = prev
+        .filter(p => penaltyPlayerIds.includes(p.id))
+        .map(p => ({
+          ...p,
+          position: 0,
+          finished: false,
+          finishTime: null,
+          rank: null,
+          isFallen: false,
+        }));
+
+      // 버프 상태 초기화
+      const boostStates = new Map<number, PlayerBoostState>();
+      pileOnPlayers.forEach(player => {
+        const positions: number[] = [];
+        for (let i = 0; i < BOOST_COUNT_PER_GAME; i++) {
+          positions.push(BOOST_ZONE_START + Math.random() * (BOOST_ZONE_END - BOOST_ZONE_START));
+        }
+        positions.sort((a, b) => a - b);
+        boostStates.set(player.id, {
+          currentSpeed: BASE_SPEED,
+          boostPositions: positions,
+          usedBoosts: 0,
+          boostEndTime: -1,
+          currentBoostAmount: 0,
+          isFallen: false,
+        });
+      });
+      boostStatesRef.current = boostStates;
+
+      return pileOnPlayers;
+    });
+
+    // 몰아주기에서는 꼴찌만 벌칙
+    setPenaltySettings({
+      penaltyCount: 1,
+      penaltyRanks: [penaltyPlayerIds.length],
+    });
+
+    // 돌멩이 이벤트 비활성화
+    stoneEventEnabledRef.current = false;
+    stoneAppearedRef.current = false;
+    stoneTargetPlayerIdRef.current = null;
+    stoneEventTriggeredRef.current = false;
+    setStoneEventEnabled(false);
+    setStoneAppeared(false);
+    setStoneTargetPlayerId(null);
+
+    finishOrder.current = 0;
+    setCountdown(3);
+    setElapsedTime(0);
+
+    setGamePhase('countdown');
+    let count = 3;
+    const countdownInterval = setInterval(() => {
+      count--;
+      setCountdown(count);
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        startRace();
+      }
+    }, 1000);
+  }, [startRace]);
+
   const resetGame = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -279,6 +360,7 @@ export function useRaceGame() {
     setElapsedTime(0);
     finishOrder.current = 0;
     boostStatesRef.current.clear();
+    setIsPileOn(false);
     
     // Ref 초기화
     stoneEventEnabledRef.current = false;
@@ -297,7 +379,8 @@ export function useRaceGame() {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    
+    setIsPileOn(false);
+
     setPlayers(prev => {
       const resetPlayers = prev.map(player => ({
         ...player,
@@ -384,6 +467,8 @@ export function useRaceGame() {
     replayGame,
     penaltySettings,
     setPenaltySettings,
+    isPileOn,
+    startPileOnRace,
     stoneEventEnabled,
     stoneAppeared,
     stoneTargetPlayerId,
