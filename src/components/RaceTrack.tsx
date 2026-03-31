@@ -1,5 +1,6 @@
 import { Player, GamePhase } from '@/types/game';
 import { RunningAnimal } from '@/components/RunningAnimal';
+import { CherryBlossoms } from '@/components/CherryBlossoms';
 import { cn } from '@/lib/utils';
 
 interface RaceTrackProps {
@@ -24,6 +25,9 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-track-bg p-4 flex flex-col">
+      {/* Cherry Blossoms - Spring Event */}
+      {(gamePhase === 'racing' || gamePhase === 'countdown') && <CherryBlossoms />}
+
       {/* Header */}
       <div className="text-center mb-4">
         <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">
