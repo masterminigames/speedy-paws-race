@@ -14,7 +14,7 @@ export function CherryBlossoms() {
   const petals = useMemo<Petal[]>(() => {
     return Array.from({ length: 20 }, (_, i) => ({
       id: i,
-      left: Math.random() * 100,
+      left: -10 + Math.random() * 160,
       delay: Math.random() * 5,
       duration: 3 + Math.random() * 4,
       size: 10 + Math.random() * 14,
