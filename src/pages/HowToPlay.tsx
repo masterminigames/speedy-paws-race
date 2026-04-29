@@ -182,6 +182,35 @@ const HowToPlay = () => {
             </div>
           </section>
 
+          {/* 몰아주기 */}
+          <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-foreground">🔥 몰아주기 기능</h2>
+
+            <div className="bg-card rounded-2xl p-8 border border-border space-y-4">
+              <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                🔥 몰아주기란?
+              </h3>
+              <div className="space-y-3 text-foreground/80 leading-relaxed">
+                <p>
+                  벌칙 대상자가 <strong>2명 이상</strong>일 때 사용할 수 있는 기능입니다.
+                  벌칙 대상자끼리 다시 한 번 달리기를 해서, <strong>최종 꼴찌 1명</strong>에게
+                  벌칙을 몰아주는 시스템입니다.
+                </p>
+                <p>사용 방법:</p>
+                <ol className="list-decimal list-inside space-y-2 text-sm">
+                  <li>경주가 끝나면 결과 모달이 표시됩니다</li>
+                  <li>벌칙 당첨자 카드 아래에 <strong>"🔥 몰아주기 🔥"</strong> 버튼이 나타납니다</li>
+                  <li>버튼을 누르면 벌칙 대상자끼리만 재경주가 시작됩니다</li>
+                  <li>재경주에서 꼴찌가 되면 최종 벌칙 대상자(☠️)로 결정됩니다</li>
+                </ol>
+                <div className="bg-muted rounded-lg p-4 text-sm">
+                  💡 <strong>팁:</strong> 몰아주기 중에는 돌멩이 이벤트가 발생하지 않습니다.
+                  순수하게 운으로만 최종 1인이 결정됩니다!
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Special Events */}
           <section className="space-y-6">
             <h2 className="text-2xl font-bold text-foreground">🎲 특별 이벤트 안내</h2>
