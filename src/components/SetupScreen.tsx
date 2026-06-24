@@ -169,16 +169,6 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-track-bg p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 mb-6 text-sm">
-          <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">게임 소개</Link>
-          <span className="text-muted-foreground/40">·</span>
-          <Link to="/how-to-play" className="text-muted-foreground hover:text-primary transition-colors">이용 방법</Link>
-          <span className="text-muted-foreground/40">·</span>
-          <Link to="/guides" className="text-muted-foreground hover:text-primary transition-colors">게임 가이드</Link>
-          <span className="text-muted-foreground/40">·</span>
-          <Link to="/updates" className="text-muted-foreground hover:text-primary transition-colors">업데이트</Link>
-        </nav>
-
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-2">
             {gameMode === 'swimming' ? '🏊 수영 경주 🏊' : '☕ 커피 달리기 경주 ☕'}
@@ -458,6 +448,16 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
         )}
       </div>
       <AdPlaceholder />
+
+      <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 mt-6 text-sm">
+        <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">게임 소개</Link>
+        <span className="text-muted-foreground/40">·</span>
+        <Link to="/how-to-play" className="text-muted-foreground hover:text-primary transition-colors">이용 방법</Link>
+        <span className="text-muted-foreground/40">·</span>
+        <Link to="/guides" className="text-muted-foreground hover:text-primary transition-colors">게임 가이드</Link>
+        <span className="text-muted-foreground/40">·</span>
+        <Link to="/updates" className="text-muted-foreground hover:text-primary transition-colors">업데이트</Link>
+      </nav>
     </div>
   );
 }
