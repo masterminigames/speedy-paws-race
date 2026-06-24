@@ -1,21 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { getPenaltyStats, resetPenaltyStats, AnimalStat } from '@/lib/penaltyStats';
+import {
+  getPenaltyStats,
+  resetLocalPenaltyStats,
+  isSupabaseEnabled,
+  AnimalStat,
+} from '@/lib/penaltyStats';
 
 const FLIP_EMOJIS = ['🦄', '🐔', '🐦‍🔥', '🐣'];
 
 const Stats = () => {
-  const [stats, setStats] = useState<AnimalStat[]>(() => getPenaltyStats());
+  const [stats, setStats] = useState<AnimalStat[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadStats = () => {
+    setLoading(true);
+    getPenaltyStats()
+      .then(setStats)
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   const total = stats.reduce((sum, s) => sum + s.count, 0);
   const max = stats.reduce((m, s) => Math.max(m, s.count), 0);
 
   const handleReset = () => {
-    if (window.confirm('벌칙 통계를 모두 초기화할까요? 되돌릴 수 없습니다.')) {
-      resetPenaltyStats();
-      setStats([]);
+    if (window.confirm('이 기기의 벌칙 통계를 초기화할까요? 되돌릴 수 없습니다.')) {
+      resetLocalPenaltyStats();
+      loadStats();
     }
   };
 
@@ -42,11 +59,20 @@ const Stats = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">벌칙 당첨 통계</h1>
             <p className="text-muted-foreground leading-relaxed">
               어떤 동물이 벌칙에 가장 많이 당첨됐는지 확인하세요.<br />
-              경주가 끝날 때마다 이 기기에 자동으로 기록됩니다.
+              {isSupabaseEnabled
+                ? '전 세계 모든 플레이어의 결과가 합산됩니다.'
+                : '경주가 끝날 때마다 이 기기에 자동으로 기록됩니다.'}
             </p>
+            <span className="inline-block text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground">
+              {isSupabaseEnabled ? '🌐 전체 사용자 합산 통계' : '💾 이 기기 기록'}
+            </span>
           </section>
 
-          {stats.length === 0 ? (
+          {loading ? (
+            <section className="bg-card rounded-2xl p-10 border border-border text-center text-muted-foreground">
+              불러오는 중…
+            </section>
+          ) : stats.length === 0 ? (
             /* Empty state */
             <section className="bg-card rounded-2xl p-10 border border-border text-center space-y-4">
               <div className="text-5xl">🏁</div>
@@ -119,12 +145,14 @@ const Stats = () => {
                 )}
               </section>
 
-              {/* Reset */}
-              <div className="flex justify-center">
-                <Button variant="outline" onClick={handleReset} className="rounded-xl">
-                  🗑️ 통계 초기화
-                </Button>
-              </div>
+              {/* Reset (로컬 모드일 때만) */}
+              {!isSupabaseEnabled && (
+                <div className="flex justify-center">
+                  <Button variant="outline" onClick={handleReset} className="rounded-xl">
+                    🗑️ 통계 초기화
+                  </Button>
+                </div>
+              )}
             </>
           )}
 
