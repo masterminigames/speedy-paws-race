@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Animal, ANIMALS, SetupStep, PenaltySettings } from '@/types/game';
+import { Link } from 'react-router-dom';
+import { Animal, ANIMALS, SetupStep, PenaltySettings, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { AdPlaceholder } from '@/components/AdPlaceholder';
 import { cn } from '@/lib/utils';
@@ -9,9 +10,11 @@ interface SetupScreenProps {
   playerCount: number;
   setPlayerCount: (count: number) => void;
   onStart: (selectedAnimals: Animal[], penaltySettings: PenaltySettings) => void;
+  gameMode: GameMode;
+  onGameModeChange: (mode: GameMode) => void;
 }
 
-export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScreenProps) {
+export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, onGameModeChange }: SetupScreenProps) {
   const [currentStep, setCurrentStep] = useState<SetupStep>('playerCount');
   const [selectedAnimals, setSelectedAnimals] = useState<(Animal | null)[]>(
     Array(15).fill(null)
@@ -166,13 +169,51 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScree
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-track-bg p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
+        <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 mb-6 text-sm">
+          <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">게임 소개</Link>
+          <span className="text-muted-foreground/40">·</span>
+          <Link to="/how-to-play" className="text-muted-foreground hover:text-primary transition-colors">이용 방법</Link>
+          <span className="text-muted-foreground/40">·</span>
+          <Link to="/guides" className="text-muted-foreground hover:text-primary transition-colors">게임 가이드</Link>
+          <span className="text-muted-foreground/40">·</span>
+          <Link to="/updates" className="text-muted-foreground hover:text-primary transition-colors">업데이트</Link>
+        </nav>
+
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-2">
-            ☕ 커피 달리기 경주 ☕
+            {gameMode === 'swimming' ? '🏊 수영 경주 🏊' : '☕ 커피 달리기 경주 ☕'}
           </h1>
           <p className="text-muted-foreground text-lg">
             친구들과 함께 신나는 경주를 즐겨보세요!
           </p>
+        </div>
+
+        {/* Mode Selector */}
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <button
+            onClick={() => onGameModeChange('running')}
+            className={cn(
+              "flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all duration-200",
+              gameMode === 'running'
+                ? "bg-primary text-primary-foreground shadow-button scale-105"
+                : "bg-card text-muted-foreground hover:bg-muted border border-border"
+            )}
+          >
+            <span className="text-xl">🏃</span>
+            <span>달리기</span>
+          </button>
+          <button
+            onClick={() => onGameModeChange('swimming')}
+            className={cn(
+              "flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all duration-200",
+              gameMode === 'swimming'
+                ? "bg-primary text-primary-foreground shadow-button scale-105"
+                : "bg-card text-muted-foreground hover:bg-muted border border-border"
+            )}
+          >
+            <span className="text-xl">🏊</span>
+            <span>수영</span>
+          </button>
         </div>
 
         {renderStepIndicator()}
@@ -261,7 +302,10 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScree
                         : "bg-animal-card hover:bg-animal-card-hover hover:scale-105 hover:shadow-animal cursor-pointer"
                     )}
                   >
-                    <span className="text-3xl md:text-4xl">{animal.emoji}</span>
+                    <span
+                      className="text-3xl md:text-4xl"
+                      style={['🦄', '🐔'].includes(animal.emoji) ? { display: 'inline-block', transform: 'scaleX(-1)' } : undefined}
+                    >{animal.emoji}</span>
                     <span className="text-xs text-muted-foreground hidden md:block">
                       {animal.name}
                     </span>
@@ -318,7 +362,7 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScree
                 >
                   <Minus className="w-5 h-5" />
                 </button>
-                <div className="w-16 h-16 rounded-xl bg-destructive text-destructive-foreground flex items-center justify-center text-2xl font-bold shadow-button">
+                <div className={cn("w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold shadow-button", gameMode === 'swimming' ? "bg-blue-600 text-white" : "bg-destructive text-destructive-foreground")}>
                   {penaltySettings.penaltyCount}
                 </div>
                 <button
@@ -361,7 +405,7 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScree
                       className={cn(
                         "w-10 h-10 md:w-12 md:h-12 rounded-xl font-bold transition-all duration-200",
                         isSelected
-                          ? "bg-destructive text-destructive-foreground shadow-button scale-110"
+                          ? cn(gameMode === 'swimming' ? "bg-blue-600 text-white" : "bg-destructive text-destructive-foreground", "shadow-button scale-110")
                           : "bg-secondary text-secondary-foreground hover:bg-accent"
                       )}
                     >
@@ -380,7 +424,10 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart }: SetupScree
                     key={i}
                     className="flex items-center gap-1 px-3 py-2 rounded-lg bg-card"
                   >
-                    <span className="text-xl">{animal?.emoji}</span>
+                    <span
+                      className="text-xl"
+                      style={animal && ['🦄', '🐔'].includes(animal.emoji) ? { display: 'inline-block', transform: 'scaleX(-1)' } : undefined}
+                    >{animal?.emoji}</span>
                     <span className="text-xs">P{i + 1}</span>
                   </div>
                 ))}

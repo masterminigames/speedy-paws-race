@@ -99,7 +99,7 @@ const HowToPlay = () => {
                   선택 가능한 동물은 다음과 같습니다:
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                  {['🐶 강아지', '🐱 고양이', '🐰 토끼', '🦊 여우', '🐻 곰', '🐼 팬더', '🐯 호랑이', '🐸 개구리', '🐧 펭귄', '🦁 사자'].map((animal) => (
+                  {['🐶 강아지', '🐱 고양이', '🐰 토끼', '🦊 여우', '🐻 곰', '🐼 판다', '🐨 코알라', '🦁 사자', '🐯 호랑이', '🐮 소', '🐷 돼지', '🐸 개구리', '🐵 원숭이', '🦄 유니콘', '🐔 닭'].map((animal) => (
                     <div key={animal} className="bg-muted rounded-lg p-2 text-center text-sm">
                       {animal}
                     </div>
@@ -109,6 +109,11 @@ const HowToPlay = () => {
                   같은 동물을 여러 명이 선택할 수 없습니다. 원하는 캐릭터를 먼저 선택하세요!
                   모두 고르기 어렵다면 <strong>🔀 랜덤 배정</strong> 버튼을 눌러 자동으로 배정받을 수도 있습니다.
                 </p>
+                <div className="bg-muted rounded-lg p-4 text-sm">
+                  🐔 <strong>닭 변신 시스템:</strong> 닭을 선택하면 매 판마다 확률에 따라 변신합니다!
+                  60% 확률로 닭(🐔), 25% 확률로 병아리(🐣), 15% 확률로 불사조(🐦‍🔥)가 됩니다.
+                  병아리는 속도가 10% 느리고, 불사조는 2배 크기에 5% 빠르며 장애물에 면역입니다.
+                </div>
               </div>
             </div>
 
@@ -153,11 +158,12 @@ const HowToPlay = () => {
                 <ul className="list-disc list-inside space-y-1 text-sm">
                   <li><strong>각 레인</strong>: 동물 캐릭터의 현재 위치</li>
                   <li><strong>실시간 순위</strong>: 현재 순위 (1등부터 꼴찌까지)</li>
-                  <li><strong>붉은색 강조</strong>: 현재 벌칙 대상 순위</li>
+                  <li><strong>벌칙 강조</strong>: 달리기는 붉은색, 수영은 파란색으로 벌칙 대상 표시</li>
                 </ul>
                 <div className="bg-muted rounded-lg p-4 text-sm">
-                  🪨 <strong>주의:</strong> 50% 확률로 후반부에 돌멩이가 등장합니다!
-                  선두를 달리던 캐릭터가 돌멩이에 걸려 넘어지는 극적인 반전이 일어날 수 있어요.
+                  🪨 <strong>주의:</strong> 60% 확률로 후반부에 장애물이 등장합니다!
+                  달리기 모드에서는 돌멩이(🪨), 수영 모드에서는 파도(🌊)가 나타나며
+                  선두를 달리던 캐릭터가 넘어지는 극적인 반전이 일어날 수 있어요.
                 </div>
               </div>
             </div>
@@ -193,7 +199,7 @@ const HowToPlay = () => {
               <div className="space-y-3 text-foreground/80 leading-relaxed">
                 <p>
                   벌칙 대상자가 <strong>2명 이상</strong>일 때 사용할 수 있는 기능입니다.
-                  벌칙 대상자끼리 다시 한 번 달리기를 해서, <strong>최종 꼴찌 1명</strong>에게
+                  벌칙 대상자끼리 다시 한 번 경주를 해서, <strong>최종 꼴찌 1명</strong>에게
                   벌칙을 몰아주는 시스템입니다.
                 </p>
                 <p>사용 방법:</p>
@@ -204,7 +210,7 @@ const HowToPlay = () => {
                   <li>재경주에서 꼴찌가 되면 최종 벌칙 대상자(☠️)로 결정됩니다</li>
                 </ol>
                 <div className="bg-muted rounded-lg p-4 text-sm">
-                  💡 <strong>팁:</strong> 몰아주기 중에는 돌멩이 이벤트가 발생하지 않습니다.
+                  💡 <strong>팁:</strong> 몰아주기 중에는 장애물 이벤트가 발생하지 않습니다.
                   순수하게 운으로만 최종 1인이 결정됩니다!
                 </div>
               </div>
@@ -217,20 +223,65 @@ const HowToPlay = () => {
 
             <div className="bg-card rounded-2xl p-8 border border-border space-y-4">
               <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-                🪨 돌멩이 이벤트
+                🪨 장애물 이벤트
               </h3>
               <div className="space-y-3 text-foreground/80 leading-relaxed">
-                <p>돌멩이 이벤트는 다음과 같이 진행됩니다:</p>
+                <p>장애물 이벤트는 다음과 같이 진행됩니다:</p>
                 <ol className="list-decimal list-inside space-y-2 text-sm">
-                  <li>게임 시작 시 <strong>50% 확률</strong>로 돌멩이 이벤트 활성화 여부 결정</li>
-                  <li>선두 캐릭터가 <strong>75% 지점</strong>을 통과하는 순간 이벤트 발동</li>
-                  <li><strong>85% 지점</strong>에 돌멩이가 모든 레인에 동시 등장</li>
-                  <li>돌멩이를 처음 밟은 선두 캐릭터가 <strong>90도 회전하며 넘어짐</strong></li>
+                  <li>게임 시작 시 <strong>60% 확률</strong>로 장애물 이벤트 활성화 여부 결정</li>
+                  <li>선두 캐릭터가 <strong>80% 지점</strong>을 통과하는 순간 이벤트 발동</li>
+                  <li><strong>85% 지점</strong>에 장애물 등장 (달리기: 🪨 돌멩이, 수영: 🌊 파도)</li>
+                  <li>장애물에 부딪힌 선두 캐릭터가 넘어짐</li>
                   <li>넘어진 캐릭터는 <strong>87% 지점에서 정지</strong>, 이후 캐릭터들이 추월 가능</li>
                 </ol>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
-                  ⚠️ 돌멩이 이벤트 덕분에 경주 막판까지 절대 안심할 수 없습니다.
-                  1등이었어도 돌멩이로 인해 순식간에 역전될 수 있어요!
+                  ⚠️ 장애물 이벤트 덕분에 경주 막판까지 절대 안심할 수 없습니다.
+                  1등이었어도 순식간에 역전될 수 있어요! (불사조는 장애물 면역)
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card rounded-2xl p-8 border border-border space-y-4">
+              <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                🚤 배 부스터 (수영 모드 전용)
+              </h3>
+              <div className="space-y-3 text-foreground/80 leading-relaxed">
+                <p>수영 모드에서만 등장하는 특별 부스터입니다:</p>
+                <ol className="list-decimal list-inside space-y-2 text-sm">
+                  <li>게임 시작 시 <strong>60% 확률</strong>로 배 부스터 등장 여부 결정</li>
+                  <li>랜덤한 1개 레인의 <strong>20% 지점</strong>에 배(🚤)가 배치됩니다</li>
+                  <li>해당 레인의 캐릭터가 배 위치를 지나가면 <strong>60% 확률</strong>로 부스터 획득</li>
+                  <li>부스터를 먹으면 <strong>4배 속도</strong>로 질주합니다!</li>
+                </ol>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                  🏊 수영 모드에서만 등장하며, 운 좋게 배 부스터를 먹으면
+                  단숨에 선두로 치고 나갈 수 있습니다!
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card rounded-2xl p-8 border border-border space-y-4">
+              <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                🐔 닭 변신 시스템
+              </h3>
+              <div className="space-y-3 text-foreground/80 leading-relaxed">
+                <p>닭을 선택하면 매 판마다 확률에 따라 세 가지 형태 중 하나로 변신합니다:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-muted rounded-lg p-4 text-center">
+                    <div className="text-3xl mb-2">🐔</div>
+                    <div className="font-bold text-sm">닭 (60%)</div>
+                    <div className="text-xs text-muted-foreground mt-1">기본 상태</div>
+                  </div>
+                  <div className="bg-muted rounded-lg p-4 text-center">
+                    <div className="text-3xl mb-2">🐣</div>
+                    <div className="font-bold text-sm">병아리 (25%)</div>
+                    <div className="text-xs text-muted-foreground mt-1">속도 10% 감소</div>
+                  </div>
+                  <div className="bg-muted rounded-lg p-4 text-center">
+                    <div className="text-3xl mb-2">🐦‍🔥</div>
+                    <div className="font-bold text-sm">불사조 (15%)</div>
+                    <div className="text-xs text-muted-foreground mt-1">2배 크기 · 5% 빠름 · 장애물 면역</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,20 +297,24 @@ const HowToPlay = () => {
                   a: '아니요, 완전히 랜덤입니다. 0.5초마다 각 캐릭터의 속도가 무작위로 변경되며, 누구도 결과를 예측하거나 조작할 수 없습니다.',
                 },
                 {
+                  q: '달리기와 수영 모드의 차이는?',
+                  a: '달리기 모드에서는 돌멩이(🪨) 장애물이, 수영 모드에서는 파도(🌊) 장애물과 배 부스터(🚤)가 등장합니다. 벌칙 표시 색상도 달리기는 빨간색, 수영은 파란색입니다.',
+                },
+                {
+                  q: '닭을 고르면 매번 같은 캐릭터인가요?',
+                  a: '아니요! 닭을 선택하면 매 판마다 확률에 따라 닭(60%), 병아리(25%), 불사조(15%)로 변신합니다. 불사조는 장애물 면역에 5% 빠르고, 병아리는 10% 느립니다.',
+                },
+                {
                   q: '모바일에서도 사용할 수 있나요?',
                   a: '네, 모바일 기기에서도 원활하게 작동합니다. 스마트폰이나 태블릿으로도 게임을 즐길 수 있습니다.',
                 },
                 {
                   q: '한 번에 최대 몇 명까지 참가할 수 있나요?',
-                  a: '최대 15명까지 동시에 참가할 수 있습니다.',
+                  a: '최대 15명까지 동시에 참가할 수 있습니다. 15종의 동물 캐릭터 중 선택할 수 있습니다.',
                 },
                 {
-                  q: '같은 동물을 여러 명이 선택할 수 있나요?',
-                  a: '아니요, 각 동물 캐릭터는 한 명만 선택할 수 있습니다. 먼저 선택한 사람이 해당 캐릭터를 사용합니다.',
-                },
-                {
-                  q: '돌멩이 이벤트가 매번 발생하나요?',
-                  a: '아니요, 50% 확률로만 발생합니다. 게임 시작 시 랜덤으로 결정되며, 50%의 경우에는 돌멩이 없이 깔끔하게 경주가 진행됩니다.',
+                  q: '장애물 이벤트가 매번 발생하나요?',
+                  a: '아니요, 60% 확률로만 발생합니다. 게임 시작 시 랜덤으로 결정되며, 장애물 없이 깔끔하게 경주가 진행되기도 합니다.',
                 },
               ].map((item) => (
                 <div key={item.q} className="bg-card rounded-xl p-6 border border-border space-y-2">

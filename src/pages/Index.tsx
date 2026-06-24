@@ -4,7 +4,7 @@ import { RaceTrack } from '@/components/RaceTrack';
 import { ResultModal } from '@/components/ResultModal';
 import { Footer } from '@/components/Footer';
 import { useRaceGame } from '@/hooks/useRaceGame';
-import { Animal, PenaltySettings } from '@/types/game';
+import { Animal, PenaltySettings, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -26,17 +26,25 @@ const Index = () => {
     stoneEventEnabled,
     stoneAppeared,
     stoneTargetPlayerId,
+    boatEventEnabled,
+    boatLanePlayerId,
+    boatConsumed,
   } = useRaceGame();
 
   const [showResultModal, setShowResultModal] = useState(false);
+  const [gameMode, setGameMode] = useState<GameMode>('swimming');
   const hasShownModal = useRef(false);
   const originalPenaltyCountRef = useRef(0);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('swimming-mode', gameMode === 'swimming');
+  }, [gameMode]);
 
   const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
     hasShownModal.current = false;
     originalPenaltyCountRef.current = penalty.penaltyCount;
     setPenaltySettings(penalty);
-    initializePlayers(playerCount, selectedAnimals, penalty);
+    initializePlayers(playerCount, selectedAnimals, penalty, gameMode);
     setTimeout(() => {
       startCountdown();
     }, 100);
@@ -86,6 +94,8 @@ const Index = () => {
             playerCount={playerCount}
             setPlayerCount={setPlayerCount}
             onStart={handleStart}
+            gameMode={gameMode}
+            onGameModeChange={setGameMode}
           />
         </div>
         <Footer />
@@ -106,6 +116,10 @@ const Index = () => {
           stoneEventEnabled={stoneEventEnabled}
           stoneAppeared={stoneAppeared}
           stoneTargetPlayerId={stoneTargetPlayerId}
+          gameMode={gameMode}
+          boatEventEnabled={boatEventEnabled}
+          boatLanePlayerId={boatLanePlayerId}
+          boatConsumed={boatConsumed}
         />
         <ResultModal
           open={showResultModal}
@@ -117,6 +131,7 @@ const Index = () => {
           isPileOn={isPileOn}
           onPileOn={handlePileOn}
           originalPenaltyCount={originalPenaltyCountRef.current}
+          gameMode={gameMode}
         />
         {gamePhase === 'finished' && !showResultModal && (
           <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 flex gap-3">

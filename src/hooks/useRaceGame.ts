@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Player, GamePhase, Animal, ANIMALS, PenaltySettings } from '@/types/game';
+import { Player, GamePhase, GameMode, Animal, ANIMALS, PenaltySettings } from '@/types/game';
 
 const UPDATE_INTERVAL = 50; // 20 FPS
 
@@ -15,9 +15,28 @@ const BOOST_ZONE_START = 0;          // 버프 구간 시작 (0%)
 const BOOST_ZONE_END = 85;           // 버프 구간 종료 (85%)
 
 // 돌멩이 이벤트 설정
-const STONE_EVENT_PROBABILITY = 0.5; // 50% 확률
+const STONE_EVENT_PROBABILITY = 0.6; // 60% 확률
 const STONE_APPEAR_POSITION = 80;    // 80% 지점에서 돌멩이 나타남
 const STONE_POSITION = 85;           // 85% 지점에서 충돌
+
+// 배 부스터 설정
+const BOAT_EVENT_PROBABILITY = 0.6;  // 60% 확률로 등장
+const BOAT_POSITION = 20;            // 20% 지점에 배치
+const BOAT_EAT_PROBABILITY = 0.6;    // 60% 확률로 먹음
+const BOAT_SPEED_MULTIPLIER = 4;     // 4배 속도
+
+const PHOENIX_ANIMAL: Animal = { id: 'phoenix', name: '불사조', emoji: '🐦‍🔥' };
+const CHICK_ANIMAL: Animal = { id: 'chick', name: '병아리', emoji: '🐣' };
+const CHICKEN_ANIMAL: Animal = { id: 'chicken', name: '닭', emoji: '🐔' };
+const CHICKEN_VARIANTS = ['chicken', 'phoenix', 'chick'];
+
+function rollChicken(animal: Animal): Animal {
+  if (!CHICKEN_VARIANTS.includes(animal.id)) return animal;
+  const roll = Math.random();
+  if (roll < 0.15) return PHOENIX_ANIMAL;
+  if (roll < 0.40) return CHICK_ANIMAL;
+  return CHICKEN_ANIMAL;
+}
 
 interface PlayerBoostState {
   currentSpeed: number;           // 현재 속도
@@ -26,6 +45,7 @@ interface PlayerBoostState {
   boostEndTime: number;           // 현재 버프 종료 시간
   currentBoostAmount: number;     // 현재 버프량
   isFallen: boolean;              // 넘어진 상태
+  hasBoatBoost: boolean;          // 배 부스터 활성
 }
 
 export function useRaceGame() {
@@ -47,7 +67,13 @@ export function useRaceGame() {
   const stoneEventEnabledRef = useRef<boolean>(false);
   const stoneAppearedRef = useRef<boolean>(false);
   const stoneTargetPlayerIdRef = useRef<number | null>(null);
-  
+
+  // 배 부스터 refs
+  const boatEventEnabledRef = useRef<boolean>(false);
+  const boatLanePlayerIdRef = useRef<number | null>(null);
+  const boatConsumedRef = useRef<boolean>(false);
+  const gameModeRef = useRef<GameMode>('running');
+
   // 몰아주기 상태
   const [isPileOn, setIsPileOn] = useState(false);
   const originalPlayersRef = useRef<Player[]>([]);
@@ -56,14 +82,18 @@ export function useRaceGame() {
   const [stoneEventEnabled, setStoneEventEnabled] = useState(false);
   const [stoneAppeared, setStoneAppeared] = useState(false);
   const [stoneTargetPlayerId, setStoneTargetPlayerId] = useState<number | null>(null);
+  const [boatEventEnabled, setBoatEventEnabled] = useState(false);
+  const [boatLanePlayerId, setBoatLanePlayerId] = useState<number | null>(null);
+  const [boatConsumed, setBoatConsumed] = useState(false);
 
-  const initializePlayers = useCallback((count: number, selectedAnimals: Animal[], penalty: PenaltySettings) => {
+  const initializePlayers = useCallback((count: number, selectedAnimals: Animal[], penalty: PenaltySettings, gameMode: GameMode = 'running') => {
+    gameModeRef.current = gameMode;
     const newPlayers: Player[] = [];
     for (let i = 0; i < count; i++) {
       newPlayers.push({
         id: i + 1,
         name: `플레이어 ${i + 1}`,
-        animal: selectedAnimals[i] || ANIMALS[i],
+        animal: rollChicken(selectedAnimals[i] || ANIMALS[i]),
         position: 0,
         finished: false,
         finishTime: null,
@@ -86,8 +116,24 @@ export function useRaceGame() {
     setStoneAppeared(false);
     setStoneTargetPlayerId(null);
     
-    console.log('🎲 돌멩이 이벤트:', stoneEnabled ? '활성화 (50%)' : '비활성화');
-    
+    console.log('🎲 돌멩이 이벤트:', stoneEnabled ? '활성화 (60%)' : '비활성화');
+
+    // 배 부스터 이벤트 결정 (수영 모드에서만, 50% 확률)
+    const boatEnabled = gameMode === 'swimming' && Math.random() < BOAT_EVENT_PROBABILITY;
+    boatEventEnabledRef.current = boatEnabled;
+    boatConsumedRef.current = false;
+    if (boatEnabled) {
+      const randomIndex = Math.floor(Math.random() * count);
+      boatLanePlayerIdRef.current = newPlayers[randomIndex].id;
+    } else {
+      boatLanePlayerIdRef.current = null;
+    }
+    setBoatEventEnabled(boatEnabled);
+    setBoatLanePlayerId(boatLanePlayerIdRef.current);
+    setBoatConsumed(false);
+
+    console.log('🚤 배 부스터:', boatEnabled ? `활성화 (레인 ${boatLanePlayerIdRef.current})` : '비활성화');
+
     // 각 플레이어의 버프 상태 초기화
     const boostStates = new Map<number, PlayerBoostState>();
     newPlayers.forEach(player => {
@@ -105,6 +151,7 @@ export function useRaceGame() {
         boostEndTime: -1,
         currentBoostAmount: 0,
         isFallen: false,
+        hasBoatBoost: false,
       });
     });
     boostStatesRef.current = boostStates;
@@ -126,9 +173,8 @@ export function useRaceGame() {
         
         // 돌멩이 나타남 체크 (1등이 75% 지점 도달하면) - Ref 사용!
         if (stoneEventEnabledRef.current && !stoneAppearedRef.current && activePlayers.length > 0) {
-          const leadersAt75 = activePlayers.filter(p => p.position >= 75);
+          const leadersAt75 = activePlayers.filter(p => p.position >= 75 && p.animal.id !== 'phoenix');
           if (leadersAt75.length > 0) {
-            // 75% 지점의 1등을 찾아서 저장
             const leader = leadersAt75.reduce((max, p) => p.position > max.position ? p : max, leadersAt75[0]);
             stoneTargetPlayerIdRef.current = leader.id;
             stoneAppearedRef.current = true;
@@ -152,6 +198,25 @@ export function useRaceGame() {
               leaderState.isFallen = true;
               stoneEventTriggeredRef.current = true;
               console.log('💥 넘어짐!', targetPlayer.name);
+            }
+          }
+        }
+
+        // 배 부스터 충돌 체크
+        if (boatEventEnabledRef.current && !boatConsumedRef.current && boatLanePlayerIdRef.current) {
+          const boatPlayer = activePlayers.find(p => p.id === boatLanePlayerIdRef.current);
+          if (boatPlayer && boatPlayer.position >= BOAT_POSITION) {
+            boatConsumedRef.current = true;
+            setBoatConsumed(true);
+            const eatSuccess = Math.random() < BOAT_EAT_PROBABILITY;
+            if (eatSuccess) {
+              const bs = boostStatesRef.current.get(boatPlayer.id);
+              if (bs) {
+                bs.hasBoatBoost = true;
+                console.log('🚤 배 부스터 획득!', boatPlayer.name);
+              }
+            } else {
+              console.log('🚤 배 부스터 놓침!', boatPlayer.name);
             }
           }
         }
@@ -188,9 +253,16 @@ export function useRaceGame() {
 
           // 현재 버프 적용 여부 체크
           let currentSpeed = BASE_SPEED;
-          if (elapsed < boostState.boostEndTime) {
-            // 버프 활성화 중
+          if (boostState.hasBoatBoost) {
+            currentSpeed = BASE_SPEED * BOAT_SPEED_MULTIPLIER;
+          } else if (elapsed < boostState.boostEndTime) {
             currentSpeed = BASE_SPEED + boostState.currentBoostAmount;
+          }
+
+          if (player.animal.id === 'chick') {
+            currentSpeed *= 0.9;
+          } else if (player.animal.id === 'phoenix') {
+            currentSpeed *= 1.05;
           }
 
           boostState.currentSpeed = currentSpeed;
@@ -215,6 +287,7 @@ export function useRaceGame() {
             ...player,
             position: newPosition,
             isFallen: false,
+            hasBoatBoost: boostState.hasBoatBoost,
           };
         });
 
@@ -289,6 +362,7 @@ export function useRaceGame() {
         .filter(p => penaltyPlayerIds.includes(p.id))
         .map(p => ({
           ...p,
+          animal: rollChicken(p.animal),
           position: 0,
           finished: false,
           finishTime: null,
@@ -311,6 +385,7 @@ export function useRaceGame() {
           boostEndTime: -1,
           currentBoostAmount: 0,
           isFallen: false,
+          hasBoatBoost: false,
         });
       });
       boostStatesRef.current = boostStates;
@@ -323,6 +398,14 @@ export function useRaceGame() {
       penaltyCount: 1,
       penaltyRanks: [penaltyPlayerIds.length],
     });
+
+    // 배 부스터 비활성화
+    boatEventEnabledRef.current = false;
+    boatLanePlayerIdRef.current = null;
+    boatConsumedRef.current = false;
+    setBoatEventEnabled(false);
+    setBoatLanePlayerId(null);
+    setBoatConsumed(false);
 
     // 돌멩이 이벤트 비활성화
     stoneEventEnabledRef.current = false;
@@ -372,6 +455,14 @@ export function useRaceGame() {
     setStoneEventEnabled(false);
     setStoneAppeared(false);
     setStoneTargetPlayerId(null);
+
+    // 배 부스터 초기화
+    boatEventEnabledRef.current = false;
+    boatLanePlayerIdRef.current = null;
+    boatConsumedRef.current = false;
+    setBoatEventEnabled(false);
+    setBoatLanePlayerId(null);
+    setBoatConsumed(false);
   }, []);
 
   const replayGame = useCallback(() => {
@@ -384,6 +475,7 @@ export function useRaceGame() {
     setPlayers(prev => {
       const resetPlayers = prev.map(player => ({
         ...player,
+        animal: rollChicken(player.animal),
         position: 0,
         finished: false,
         finishTime: null,
@@ -405,7 +497,23 @@ export function useRaceGame() {
       setStoneTargetPlayerId(null);
       
       console.log('🎲 돌멩이 이벤트 (재시작):', newStoneEnabled ? '활성화' : '비활성화');
-      
+
+      // 배 부스터 재설정 (수영 모드에서만)
+      const newBoatEnabled = gameModeRef.current === 'swimming' && Math.random() < BOAT_EVENT_PROBABILITY;
+      boatEventEnabledRef.current = newBoatEnabled;
+      boatConsumedRef.current = false;
+      if (newBoatEnabled) {
+        const randomIndex = Math.floor(Math.random() * resetPlayers.length);
+        boatLanePlayerIdRef.current = resetPlayers[randomIndex].id;
+      } else {
+        boatLanePlayerIdRef.current = null;
+      }
+      setBoatEventEnabled(newBoatEnabled);
+      setBoatLanePlayerId(boatLanePlayerIdRef.current);
+      setBoatConsumed(false);
+
+      console.log('🚤 배 부스터 (재시작):', newBoatEnabled ? `활성화 (레인 ${boatLanePlayerIdRef.current})` : '비활성화');
+
       // 버프 상태 재초기화
       const boostStates = new Map<number, PlayerBoostState>();
       resetPlayers.forEach(player => {
@@ -423,13 +531,14 @@ export function useRaceGame() {
           boostEndTime: -1,
           currentBoostAmount: 0,
           isFallen: false,
+          hasBoatBoost: false,
         });
       });
       boostStatesRef.current = boostStates;
-      
+
       return resetPlayers;
     });
-    
+
     setCountdown(3);
     setElapsedTime(0);
     finishOrder.current = 0;
@@ -472,5 +581,8 @@ export function useRaceGame() {
     stoneEventEnabled,
     stoneAppeared,
     stoneTargetPlayerId,
+    boatEventEnabled,
+    boatLanePlayerId,
+    boatConsumed,
   };
 }

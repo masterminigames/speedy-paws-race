@@ -1,4 +1,4 @@
-import { Player } from '@/types/game';
+import { Player, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { AdPlaceholder } from '@/components/AdPlaceholder';
 import {
@@ -20,9 +20,11 @@ interface ResultModalProps {
   isPileOn?: boolean;
   onPileOn?: () => void;
   originalPenaltyCount?: number;
+  gameMode?: GameMode;
 }
 
-export function ResultModal({ open, onClose, onRestart, onReplay, players, penaltyRanks, isPileOn = false, onPileOn, originalPenaltyCount = 0 }: ResultModalProps) {
+export function ResultModal({ open, onClose, onRestart, onReplay, players, penaltyRanks, isPileOn = false, onPileOn, originalPenaltyCount = 0, gameMode = 'running' }: ResultModalProps) {
+  const isSwimming = gameMode === 'swimming';
   const sortedPlayers = [...players].sort((a, b) => (a.rank || 0) - (b.rank || 0));
   const penaltyPlayers = sortedPlayers.filter(p => penaltyRanks.includes(p.rank || 0));
   
@@ -41,7 +43,7 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
       <DialogContent className="max-w-md mx-auto bg-card border-0 rounded-3xl shadow-modal">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">
-            {isPileOn ? '🔥 몰아주기 결과 🔥' : '🏆 경주 결과 🏆'}
+            {isPileOn ? '🔥 몰아주기 결과 🔥' : '🏆 벌칙 당첨자 🏆'}
           </DialogTitle>
         </DialogHeader>
 
@@ -49,17 +51,21 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
           {/* Penalty Players Only */}
           {penaltyPlayers.length > 0 && (
             <div className="space-y-3">
-              <h4 className="font-semibold text-center text-destructive flex items-center justify-center gap-2">
-                {isPileOn ? '☠️ 혼자 내는자 ☠️' : '💣 벌칙 당첨자 💣'}
-              </h4>
+              {isPileOn && (
+                <h4 className={cn("font-semibold text-center flex items-center justify-center gap-2", isSwimming ? "text-blue-600" : "text-destructive")}>
+                  ☠️ 혼자 내는자 ☠️
+                </h4>
+              )}
               <div className="flex flex-wrap justify-center gap-3">
                 {penaltyPlayers.map(player => (
                   <div
                     key={player.id}
-                    className="text-center p-4 bg-gradient-to-br from-destructive/20 to-destructive/5 rounded-2xl border-2 border-destructive/30 animate-pulse"
+                    className={cn("text-center p-4 rounded-2xl border-2 animate-pulse", isSwimming ? "bg-gradient-to-br from-blue-600/20 to-blue-600/5 border-blue-600/30" : "bg-gradient-to-br from-destructive/20 to-destructive/5 border-destructive/30")}
                   >
-                    <div className="text-4xl mb-2">{player.animal.emoji}</div>
-                    <div className="text-destructive font-bold flex items-center justify-center gap-1">
+                    <div className="text-4xl mb-2">
+                      <span style={['🦄', '🐔', '🐦‍🔥', '🐣'].includes(player.animal.emoji) ? { display: 'inline-block', transform: player.animal.emoji === '🐦‍🔥' ? 'scale(-2, 2)' : 'scaleX(-1)' } : undefined}>{player.animal.emoji}</span>
+                    </div>
+                    <div className={cn("font-bold flex items-center justify-center gap-1", isSwimming ? "text-blue-600" : "text-destructive")}>
                       {isPileOn ? '☠️' : '💣'} {player.rank}등
                     </div>
                     <div className="text-muted-foreground text-sm">플레이어 {player.id}</div>
@@ -95,11 +101,11 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
                       className={cn(
                         "flex flex-col items-center p-2 rounded-lg min-w-[50px]",
                         penaltyRanks.includes(player.rank || 0)
-                          ? "bg-destructive/20 border-2 border-destructive"
+                          ? (isSwimming ? "bg-blue-600/20 border-2 border-blue-600" : "bg-destructive/20 border-2 border-destructive")
                           : "bg-card"
                       )}
                     >
-                      <span className="text-xl">{player.animal.emoji}</span>
+                      <span className="text-xl" style={['🦄', '🐔', '🐦‍🔥', '🐣'].includes(player.animal.emoji) ? { display: 'inline-block', transform: player.animal.emoji === '🐦‍🔥' ? 'scale(-2, 2)' : 'scaleX(-1)' } : undefined}>{player.animal.emoji}</span>
                       <span className="text-xs font-bold flex items-center gap-0.5">
                         {player.rank === 1 && '🥇'}
                         {player.rank === 2 && '🥈'}

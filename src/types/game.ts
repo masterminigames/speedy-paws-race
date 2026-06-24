@@ -14,9 +14,12 @@ export interface Player {
   rank: number | null;
   easingFunction?: string;
   isFallen?: boolean;
+  hasBoatBoost?: boolean;
 }
 
 export type GamePhase = 'setup' | 'countdown' | 'racing' | 'finished';
+
+export type GameMode = 'running' | 'swimming';
 
 export type SetupStep = 'playerCount' | 'animalSelect' | 'penaltySetup';
 

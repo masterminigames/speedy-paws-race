@@ -1,5 +1,6 @@
-import { Player, GamePhase } from '@/types/game';
+import { Player, GamePhase, GameMode } from '@/types/game';
 import { RunningAnimal } from '@/components/RunningAnimal';
+import { SwimmingAnimal } from '@/components/SwimmingAnimal';
 import { cn } from '@/lib/utils';
 
 interface RaceTrackProps {
@@ -12,9 +13,15 @@ interface RaceTrackProps {
   stoneEventEnabled?: boolean;
   stoneAppeared?: boolean;
   stoneTargetPlayerId?: number | null;
+  gameMode?: GameMode;
+  boatEventEnabled?: boolean;
+  boatLanePlayerId?: number | null;
+  boatConsumed?: boolean;
 }
 
-export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyRanks, stoneEventEnabled = false, stoneAppeared = false, stoneTargetPlayerId = null }: RaceTrackProps) {
+export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyRanks, stoneEventEnabled = false, stoneAppeared = false, stoneTargetPlayerId = null, gameMode = 'running', boatEventEnabled = false, boatLanePlayerId = null, boatConsumed = false }: RaceTrackProps) {
+  const isSwimming = gameMode === 'swimming';
+  const anyPlayerFallen = players.some(p => p.isFallen);
   const sortedByRank = [...players].sort((a, b) => {
     if (a.rank && b.rank) return a.rank - b.rank;
     if (a.rank) return -1;
@@ -23,12 +30,17 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-track-bg p-4 flex flex-col">
+    <div className={cn(
+      "min-h-screen p-4 flex flex-col",
+      isSwimming
+        ? "bg-gradient-to-b from-sky-100 to-blue-200"
+        : "bg-gradient-to-b from-background to-track-bg"
+    )}>
 
       {/* Header */}
       <div className="text-center mb-4">
         <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">
-          ☕ 커피 달리기 경주 ☕
+          {isSwimming ? '🏊 수영 경주 🏊' : '☕ 커피 달리기 경주 ☕'}
         </h1>
         <div className="text-lg text-muted-foreground">
           {gamePhase === 'racing' && (
@@ -48,19 +60,19 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 rounded-lg text-sm",
                   player.rank === 1 && "bg-gold/20 text-gold",
-                  penaltyRanks.includes(player.rank || 0) && "bg-destructive/20 text-destructive border-2 border-destructive",
+                  penaltyRanks.includes(player.rank || 0) && (isSwimming ? "bg-blue-600/20 text-blue-600 border-2 border-blue-600" : "bg-destructive/20 text-destructive border-2 border-destructive"),
                   !player.rank && "bg-muted",
                   player.rank && player.rank > 1 && !penaltyRanks.includes(player.rank) && "bg-muted"
                 )}
               >
                 <span className="font-bold">{player.rank || index + 1}.</span>
-                <span>{player.animal.emoji}</span>
+                <span style={['🦄', '🐔', '🐦‍🔥', '🐣'].includes(player.animal.emoji) ? { display: 'inline-block', transform: player.animal.emoji === '🐦‍🔥' ? 'scale(-2, 2)' : 'scaleX(-1)' } : undefined}>{player.animal.emoji}</span>
                 {penaltyRanks.includes(player.rank || 0) && <span>💣</span>}
               </div>
             ))}
           </div>
           {gamePhase === 'finished' && (
-            <p className="text-xs text-destructive mt-2">
+            <p className={cn("text-xs mt-2", isSwimming ? "text-blue-600" : "text-destructive")}>
               💣 벌칙 대상: {penaltyRanks.join(', ')}등
             </p>
           )}
@@ -80,12 +92,27 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
       )}
 
       {/* Race Track */}
-      <div className="flex-1 bg-track rounded-2xl p-3 md:p-4 shadow-track overflow-hidden">
+      <div className={cn(
+        "flex-1 rounded-2xl p-3 md:p-4 overflow-hidden",
+        isSwimming
+          ? "bg-blue-400 shadow-[0_8px_30px_hsl(200,60%,40%/0.3)]"
+          : "bg-track shadow-track"
+      )}>
         <div className="relative h-full flex flex-col gap-1">
           {/* Start/Finish Lines */}
-          <div className="absolute left-8 md:left-16 top-0 bottom-0 w-1 bg-white/50 z-10" />
-          <div className="absolute right-8 md:right-16 top-0 bottom-0 w-2 bg-finish z-10">
-            <div className="h-full w-full bg-[repeating-linear-gradient(0deg,white_0px,white_8px,black_8px,black_16px)]" />
+          <div className={cn(
+            "absolute left-8 md:left-16 top-0 bottom-0 w-1 z-10",
+            isSwimming ? "bg-white/70" : "bg-white/50"
+          )} />
+          <div className={cn(
+            "absolute right-8 md:right-16 top-0 bottom-0 w-2 z-10",
+            isSwimming ? "bg-red-500" : "bg-finish"
+          )}>
+            {isSwimming ? (
+              <div className="h-full w-full bg-[repeating-linear-gradient(0deg,red_0px,red_8px,white_8px,white_16px)]" />
+            ) : (
+              <div className="h-full w-full bg-[repeating-linear-gradient(0deg,white_0px,white_8px,black_8px,black_16px)]" />
+            )}
           </div>
 
           {/* Lanes */}
@@ -94,26 +121,46 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
               key={player.id}
               className={cn(
                 "flex-1 min-h-[40px] relative flex items-center rounded-lg",
-                index % 2 === 0 ? "bg-lane-even" : "bg-lane-odd"
+                isSwimming
+                  ? (index % 2 === 0 ? "bg-blue-300/60" : "bg-cyan-300/50")
+                  : (index % 2 === 0 ? "bg-lane-even" : "bg-lane-odd")
               )}
             >
-              {/* Lane number */}
-              <div className="absolute left-1 md:left-2 w-6 h-6 rounded-full bg-white/80 flex items-center justify-center text-xs font-bold text-track z-20">
+              {/* Lane rope (swimming) or lane number */}
+              {isSwimming && index > 0 && (
+                <div className="absolute left-10 md:left-20 right-10 md:right-20 -top-[2px] h-[3px] z-10 flex items-center">
+                  <div className="w-full h-full bg-[repeating-linear-gradient(90deg,hsl(45,90%,50%)_0px,hsl(45,90%,50%)_6px,hsl(200,70%,45%)_6px,hsl(200,70%,45%)_12px)] rounded-full opacity-70" />
+                </div>
+              )}
+              <div className={cn(
+                "absolute left-1 md:left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-20",
+                isSwimming ? "bg-white/90 text-blue-600" : "bg-white/80 text-track"
+              )}>
                 {index + 1}
               </div>
 
               {/* Track area */}
               <div className="absolute left-10 md:left-20 right-10 md:right-20 h-full flex items-center">
-                {/* 돌멩이 표시 (85% 지점, 모든 레인) */}
-                {stoneEventEnabled && stoneAppeared && (
+                {/* 배 부스터 (20% 지점) */}
+                {boatEventEnabled && !boatConsumed && player.id === boatLanePlayerId && (
                   <div
-                    className="absolute z-15"
+                    className="absolute z-15 animate-bounce"
+                    style={{ left: '20%', transform: 'translateX(-50%)' }}
+                  >
+                    <div className="text-3xl" style={{ transform: 'scaleX(-1)' }}>🚤</div>
+                  </div>
+                )}
+
+                {/* 장애물 표시 (85% 지점) - 충돌 후에는 넘어진 레인에만 표시 */}
+                {stoneEventEnabled && stoneAppeared && (!anyPlayerFallen || player.isFallen) && (
+                  <div
+                    className={cn("absolute z-15", isSwimming ? "animate-wave-sway" : "")}
                     style={{
                       left: '85%',
-                      transform: 'translateX(-50%)',
+                      ...(!isSwimming && { transform: 'translateX(-50%)' }),
                     }}
                   >
-                    <div className="text-xl animate-bounce">🪨</div>
+                    <div className={cn(isSwimming ? "text-4xl" : "text-xl", !isSwimming && "animate-bounce")}>{isSwimming ? '🌊' : '🪨'}</div>
                   </div>
                 )}
 
@@ -128,32 +175,37 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
                 >
                   {/* 넘어진 상태 체크 */}
                   {player.isFallen ? (
-                    // 넘어진 상태 - 87% 위치에 고정
                     <div className="relative">
-                      <div
-                        style={{
-                          transform: 'rotate(90deg)',
-                          transition: 'transform 0.3s ease-out',
-                        }}
-                      >
-                        <RunningAnimal
-                          emoji={player.animal.emoji}
-                          isRunning={false}
-                          isFinished={false}
-                        />
+                      <div className={cn(
+                        isSwimming ? "animate-slide-fall-left" : "animate-slide-fall-right"
+                      )}>
+                        {isSwimming ? (
+                          <SwimmingAnimal emoji={player.animal.emoji} isSwimming={false} isFinished={false} />
+                        ) : (
+                          <RunningAnimal emoji={player.animal.emoji} isRunning={false} isFinished={false} />
+                        )}
                       </div>
-                      {/* 💫 이모지 표시 */}
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-                        <div className="text-3xl animate-spin-slow">💫</div>
+                      <div
+                        className="absolute -top-8 animate-dizzy-appear"
+                        style={{ left: `calc(50% + ${isSwimming ? '-70px' : '22px'})` }}
+                      >
+                        <div className="text-3xl animate-spin-slow">{isSwimming ? '🌀' : '💫'}</div>
                       </div>
                     </div>
                   ) : (
-                    // 정상 상태
-                    <RunningAnimal
-                      emoji={player.animal.emoji}
-                      isRunning={gamePhase === 'racing'}
-                      isFinished={player.finished}
-                    />
+                    isSwimming ? (
+                      <SwimmingAnimal
+                        emoji={player.animal.emoji}
+                        isSwimming={gamePhase === 'racing'}
+                        isFinished={player.finished}
+                      />
+                    ) : (
+                      <RunningAnimal
+                        emoji={player.animal.emoji}
+                        isRunning={gamePhase === 'racing'}
+                        isFinished={player.finished}
+                      />
+                    )
                   )}
                 </div>
               </div>
@@ -167,7 +219,7 @@ export function RaceTrack({ players, gamePhase, countdown, elapsedTime, penaltyR
                       player.rank === 1 && "bg-gold text-white",
                       player.rank === 2 && "bg-silver text-white",
                       player.rank === 3 && "bg-bronze text-white",
-                      penaltyRanks.includes(player.rank) && "bg-destructive text-white animate-pulse",
+                      penaltyRanks.includes(player.rank) && (isSwimming ? "bg-blue-600 text-white animate-pulse" : "bg-destructive text-white animate-pulse"),
                       player.rank > 3 && !penaltyRanks.includes(player.rank) && "bg-muted text-muted-foreground"
                     )}
                   >

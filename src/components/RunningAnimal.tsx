@@ -7,6 +7,8 @@ interface RunningAnimalProps {
 }
 
 export function RunningAnimal({ emoji, isRunning, isFinished }: RunningAnimalProps) {
+  const hideLimbs = ['🐣', '🐦‍🔥'].includes(emoji);
+
   return (
     <div className="relative">
       {/* Main body container with bounce animation */}
@@ -16,52 +18,57 @@ export function RunningAnimal({ emoji, isRunning, isFinished }: RunningAnimalPro
           isRunning && !isFinished && "animate-running-bob"
         )}
       >
-        {/* Arms - 항상 표시 */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none">
-          {/* Left arm */}
-          <div
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 text-xs origin-right"
-            style={{
-              animation: isRunning && !isFinished ? 'arm-swing 0.4s ease-in-out infinite alternate' : 'none'
-            }}
-          >
-            🫷
+        {!hideLimbs && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none">
+            <div
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 text-xs origin-right"
+              style={{
+                animation: isRunning && !isFinished ? 'arm-swing 0.4s ease-in-out infinite alternate' : 'none'
+              }}
+            >
+              🫷
+            </div>
+            <div
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 text-xs origin-left"
+              style={{
+                animation: isRunning && !isFinished ? 'arm-swing 0.4s ease-in-out infinite alternate-reverse' : 'none'
+              }}
+            >
+              🫸
+            </div>
           </div>
-          {/* Right arm */}
-          <div
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 text-xs origin-left"
-            style={{
-              animation: isRunning && !isFinished ? 'arm-swing 0.4s ease-in-out infinite alternate-reverse' : 'none'
-            }}
-          >
-            🫸
-          </div>
-        </div>
+        )}
 
         {/* Animal emoji */}
-        <span className="text-2xl md:text-3xl relative z-10">{emoji}</span>
+        <span
+          className="text-2xl md:text-3xl relative z-10"
+          style={
+            ['🦄', '🐔', '🐦‍🔥', '🐣'].includes(emoji)
+              ? { display: 'inline-block', transform: emoji === '🐦‍🔥' ? 'scale(-2, 2)' : 'scaleX(-1)' }
+              : undefined
+          }
+        >{emoji}</span>
 
-        {/* Legs */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          {/* Left leg */}
-          <div
-            className={cn(
-              "text-[8px] origin-top",
-              isRunning && !isFinished && "animate-leg-run"
-            )}
-          >
-            🦶
+        {!hideLimbs && (
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+            <div
+              className={cn(
+                "text-[8px] origin-top",
+                isRunning && !isFinished && "animate-leg-run"
+              )}
+            >
+              🦶
+            </div>
+            <div
+              className={cn(
+                "text-[8px] origin-top",
+                isRunning && !isFinished && "animate-leg-run-reverse"
+              )}
+            >
+              🦶
+            </div>
           </div>
-          {/* Right leg */}
-          <div
-            className={cn(
-              "text-[8px] origin-top",
-              isRunning && !isFinished && "animate-leg-run-reverse"
-            )}
-          >
-            🦶
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Dust particles when running */}

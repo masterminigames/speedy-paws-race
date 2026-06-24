@@ -75,6 +75,14 @@
     --shadow-modal: 0 20px 60px hsl(220 25% 20% / 0.2);
   }
 
+  .swimming-mode {
+    --primary: 205 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 205 70% 50%;
+    --shadow-button: 0 4px 12px hsl(205 70% 50% / 0.3);
+    --shadow-button-hover: 0 6px 20px hsl(205 70% 50% / 0.4);
+  }
+
   .dark {
     --background: 220 25% 12%;
     --foreground: 45 20% 95%;
@@ -223,12 +231,194 @@
     animation: spin-slow 2s linear infinite;
   }
 
+  /* 포물선 비행 후 등장 */
+  .animate-dizzy-appear {
+    opacity: 0;
+    animation: dizzy-appear 0.3s ease-out 0.7s forwards;
+  }
+
+  @keyframes dizzy-appear {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+  }
+
   @keyframes spin-slow {
     from {
       transform: rotate(0deg);
     }
     to {
       transform: rotate(360deg);
+    }
+  }
+
+  /* Swimming Animation - Body sway */
+  .animate-swimming-bob {
+    animation: swimming-bob 0.4s ease-in-out infinite;
+  }
+
+  @keyframes swimming-bob {
+    0%, 100% {
+      transform: translateY(0) rotate(-3deg);
+    }
+    50% {
+      transform: translateY(-2px) rotate(3deg);
+    }
+  }
+
+  @keyframes swim-stroke {
+    0%, 100% {
+      transform: translateY(-50%) translateX(-8px) rotate(-50deg);
+    }
+    50% {
+      transform: translateY(-50%) translateX(-8px) rotate(40deg);
+    }
+  }
+
+  /* Water Splash Animation - Big splashy effect */
+  .animate-splash {
+    animation: splash 0.5s ease-out infinite;
+  }
+
+  .animate-splash-delay {
+    animation: splash-up 0.6s ease-out infinite;
+    animation-delay: 0.1s;
+  }
+
+  .animate-splash-delay-2 {
+    animation: splash 0.5s ease-out infinite;
+    animation-delay: 0.25s;
+  }
+
+  .animate-splash-big {
+    animation: splash-big 0.7s ease-out infinite;
+  }
+
+  .animate-splash-big-delay {
+    animation: splash-big 0.7s ease-out infinite;
+    animation-delay: 0.2s;
+  }
+
+  @keyframes splash {
+    0% {
+      opacity: 0.8;
+      transform: translateX(0) translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-20px) translateY(-6px) scale(0.3);
+    }
+  }
+
+  @keyframes splash-up {
+    0% {
+      opacity: 0.8;
+      transform: translateX(0) translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-10px) translateY(-14px) scale(0.4);
+    }
+  }
+
+  @keyframes splash-big {
+    0% {
+      opacity: 0.9;
+      transform: translateX(0) translateY(0) scale(1.2);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateX(-14px) translateY(-10px) scale(0.8);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-25px) translateY(-4px) scale(0.3);
+    }
+  }
+
+  /* Bubble Animation */
+  .animate-bubble {
+    animation: bubble-rise 0.8s ease-out infinite;
+  }
+
+  .animate-bubble-delay {
+    animation: bubble-rise 0.8s ease-out infinite;
+    animation-delay: 0.4s;
+  }
+
+  @keyframes bubble-rise {
+    0% {
+      opacity: 0.6;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.5);
+    }
+  }
+
+  /* Wave Sway Animation (left-right like real waves) */
+  .animate-wave-sway {
+    animation: wave-sway 0.8s ease-in-out infinite;
+  }
+
+  @keyframes wave-sway {
+    0%, 100% {
+      transform: translateX(-50%) translateX(-6px);
+    }
+    50% {
+      transform: translateX(-50%) translateX(6px);
+    }
+  }
+
+  /* Tumble and fly (running - tripped on stone) */
+  .animate-slide-fall-right {
+    animation: slide-fall-right 0.7s ease-out forwards;
+  }
+
+  @keyframes slide-fall-right {
+    0% {
+      transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    30% {
+      transform: translateX(8px) translateY(-25px) rotate(180deg);
+    }
+    50% {
+      transform: translateX(15px) translateY(-30px) rotate(360deg);
+    }
+    75% {
+      transform: translateX(20px) translateY(-10px) rotate(500deg);
+    }
+    100% {
+      transform: translateX(22px) translateY(0) rotate(540deg);
+    }
+  }
+
+  /* Tumble and fly left (swimming - swept by wave) */
+  .animate-slide-fall-left {
+    animation: slide-fall-left 0.7s ease-out forwards;
+  }
+
+  @keyframes slide-fall-left {
+    0% {
+      transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    30% {
+      transform: translateX(-25px) translateY(-25px) rotate(-180deg);
+    }
+    50% {
+      transform: translateX(-45px) translateY(-30px) rotate(-360deg);
+    }
+    75% {
+      transform: translateX(-60px) translateY(-10px) rotate(-500deg);
+    }
+    100% {
+      transform: translateX(-70px) translateY(0) rotate(-540deg);
     }
   }
 
