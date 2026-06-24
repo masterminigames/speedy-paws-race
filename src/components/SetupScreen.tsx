@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Animal, ANIMALS, SetupStep, PenaltySettings, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { AdPlaceholder } from '@/components/AdPlaceholder';
@@ -448,16 +447,6 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
         )}
       </div>
       <AdPlaceholder />
-
-      <nav className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 mt-6 text-sm">
-        <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">게임 소개</Link>
-        <span className="text-muted-foreground/40">·</span>
-        <Link to="/how-to-play" className="text-muted-foreground hover:text-primary transition-colors">이용 방법</Link>
-        <span className="text-muted-foreground/40">·</span>
-        <Link to="/guides" className="text-muted-foreground hover:text-primary transition-colors">게임 가이드</Link>
-        <span className="text-muted-foreground/40">·</span>
-        <Link to="/updates" className="text-muted-foreground hover:text-primary transition-colors">업데이트</Link>
-      </nav>
     </div>
   );
 }
