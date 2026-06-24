@@ -30,6 +30,13 @@ export function Footer() {
           </Link>
           <span className="text-muted-foreground/40 text-xs">|</span>
           <Link
+            to="/stats"
+            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            벌칙 통계
+          </Link>
+          <span className="text-muted-foreground/40 text-xs">|</span>
+          <Link
             to="/updates"
             className="text-xs text-muted-foreground hover:text-primary transition-colors"
           >

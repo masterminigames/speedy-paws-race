@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Player, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { AdPlaceholder } from '@/components/AdPlaceholder';
@@ -118,6 +119,16 @@ export function ResultModal({ open, onClose, onRestart, onReplay, players, penal
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* 벌칙 통계 링크 */}
+          <div className="text-center">
+            <Link
+              to="/stats"
+              className="text-sm text-muted-foreground hover:text-primary underline-offset-2 hover:underline transition-colors"
+            >
+              📊 동물별 벌칙 통계 보기
+            </Link>
           </div>
 
           {/* Ad Placeholder */}

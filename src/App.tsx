@@ -13,6 +13,7 @@ import Guides from "./pages/Guides";
 import GuideDrinkingGames from "./pages/GuideDrinkingGames";
 import GuideTeamBuilding from "./pages/GuideTeamBuilding";
 import GuidePenaltyIdeas from "./pages/GuidePenaltyIdeas";
+import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/guides/drinking-games" element={<GuideDrinkingGames />} />
           <Route path="/guides/team-building" element={<GuideTeamBuilding />} />
           <Route path="/guides/penalty-ideas" element={<GuidePenaltyIdeas />} />
+          <Route path="/stats" element={<Stats />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

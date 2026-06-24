@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { useRaceGame } from '@/hooks/useRaceGame';
 import { Animal, PenaltySettings, GameMode } from '@/types/game';
 import { Button } from '@/components/ui/button';
+import { recordPenalties } from '@/lib/penaltyStats';
 
 const Index = () => {
   const {
@@ -54,6 +55,9 @@ const Index = () => {
   useEffect(() => {
     if (gamePhase === 'finished' && !hasShownModal.current && players.length > 0) {
       hasShownModal.current = true;
+      // 벌칙 당첨 동물 통계 기록
+      const penalized = players.filter(p => penaltySettings.penaltyRanks.includes(p.rank || 0));
+      recordPenalties(penalized.map(p => ({ emoji: p.animal.emoji, name: p.animal.name })));
       const timer = setTimeout(() => setShowResultModal(true), 500);
       return () => clearTimeout(timer);
     }
