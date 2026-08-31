@@ -125,11 +125,26 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
     setCurrentStep(step);
   };
 
-  const steps: { key: SetupStep; label: string; number: number }[] = [
-    { key: 'playerCount', label: '인원 선택', number: 1 },
-    { key: 'animalSelect', label: '동물 선택', number: 2 },
-    { key: 'penaltySetup', label: '벌칙 설정', number: 3 },
-  ];
+  const handleModeChange = (mode: GameMode) => {
+    onGameModeChange(mode);
+    // 고양이 만지기 모드는 벌칙 설정 단계가 없으므로 되돌림
+    if (mode === 'petting' && currentStep === 'penaltySetup') {
+      setCurrentStep('animalSelect');
+    }
+  };
+
+  const isPetting = gameMode === 'petting';
+
+  const steps: { key: SetupStep; label: string; number: number }[] = isPetting
+    ? [
+        { key: 'playerCount', label: '인원 선택', number: 1 },
+        { key: 'animalSelect', label: '동물 선택', number: 2 },
+      ]
+    : [
+        { key: 'playerCount', label: '인원 선택', number: 1 },
+        { key: 'animalSelect', label: '동물 선택', number: 2 },
+        { key: 'penaltySetup', label: '벌칙 설정', number: 3 },
+      ];
 
   const currentStepIndex = steps.findIndex(s => s.key === currentStep);
 
@@ -170,17 +185,17 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-2">
-            {gameMode === 'swimming' ? '🏊 수영 경주 🏊' : '☕ 커피 달리기 경주 ☕'}
+            {isPetting ? '🐱 고양이 만지기 🐱' : gameMode === 'swimming' ? '🏊 수영 경주 🏊' : '☕ 커피 달리기 경주 ☕'}
           </h1>
           <p className="text-muted-foreground text-lg">
-            친구들과 함께 신나는 경주를 즐겨보세요!
+            {isPetting ? '누가 고양이한테 냥펀치를 맞을까?' : '친구들과 함께 신나는 경주를 즐겨보세요!'}
           </p>
         </div>
 
         {/* Mode Selector */}
-        <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="flex items-center justify-center flex-wrap gap-3 mb-6">
           <button
-            onClick={() => onGameModeChange('running')}
+            onClick={() => handleModeChange('running')}
             className={cn(
               "flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all duration-200",
               gameMode === 'running'
@@ -192,7 +207,7 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
             <span>달리기</span>
           </button>
           <button
-            onClick={() => onGameModeChange('swimming')}
+            onClick={() => handleModeChange('swimming')}
             className={cn(
               "flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all duration-200",
               gameMode === 'swimming'
@@ -202,6 +217,18 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
           >
             <span className="text-xl">🏊</span>
             <span>수영</span>
+          </button>
+          <button
+            onClick={() => handleModeChange('petting')}
+            className={cn(
+              "flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold transition-all duration-200",
+              isPetting
+                ? "bg-primary text-primary-foreground shadow-button scale-105"
+                : "bg-card text-muted-foreground hover:bg-muted border border-border"
+            )}
+          >
+            <span className="text-xl">🐱</span>
+            <span>고양이 만지기</span>
           </button>
         </div>
 
@@ -316,13 +343,24 @@ export function SetupScreen({ playerCount, setPlayerCount, onStart, gameMode, on
               >
                 <ChevronLeft className="w-4 h-4 mr-1" /> 이전
               </Button>
-              <Button
-                onClick={() => goToStep('penaltySetup')}
-                disabled={!canGoToPenalty}
-                className="rounded-xl"
-              >
-                다음 <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+              {isPetting ? (
+                <Button
+                  onClick={handleStart}
+                  disabled={!canStart}
+                  size="lg"
+                  className="rounded-2xl text-lg px-8 shadow-button hover:shadow-button-hover"
+                >
+                  🐱 시작!
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => goToStep('penaltySetup')}
+                  disabled={!canGoToPenalty}
+                  className="rounded-xl"
+                >
+                  다음 <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              )}
             </div>
           </div>
         )}

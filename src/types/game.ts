@@ -19,7 +19,7 @@ export interface Player {
 
 export type GamePhase = 'setup' | 'countdown' | 'racing' | 'finished';
 
-export type GameMode = 'running' | 'swimming';
+export type GameMode = 'running' | 'swimming' | 'petting';
 
 export type SetupStep = 'playerCount' | 'animalSelect' | 'penaltySetup';
 

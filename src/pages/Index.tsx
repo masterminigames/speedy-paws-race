@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { SetupScreen } from '@/components/SetupScreen';
 import { RaceTrack } from '@/components/RaceTrack';
 import { ResultModal } from '@/components/ResultModal';
+import { CatGame, CatPlayer } from '@/components/CatGame';
 import { Footer } from '@/components/Footer';
 import { useRaceGame } from '@/hooks/useRaceGame';
 import { Animal, PenaltySettings, GameMode } from '@/types/game';
@@ -34,6 +35,7 @@ const Index = () => {
 
   const [showResultModal, setShowResultModal] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('swimming');
+  const [pettingPlayers, setPettingPlayers] = useState<CatPlayer[] | null>(null);
   const hasShownModal = useRef(false);
   const originalPenaltyCountRef = useRef(0);
 
@@ -42,6 +44,11 @@ const Index = () => {
   }, [gameMode]);
 
   const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
+    // 고양이 만지기 모드는 경주가 아니라 별도 화면
+    if (gameMode === 'petting') {
+      setPettingPlayers(selectedAnimals.map((animal, i) => ({ id: i + 1, animal })));
+      return;
+    }
     hasShownModal.current = false;
     originalPenaltyCountRef.current = penalty.penaltyCount;
     setPenaltySettings(penalty);
@@ -89,6 +96,17 @@ const Index = () => {
     hasShownModal.current = false;
     startPileOnRace(penaltyPlayerIds);
   };
+
+  if (pettingPlayers) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1">
+          <CatGame players={pettingPlayers} onHome={() => setPettingPlayers(null)} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (gamePhase === 'setup') {
     return (
