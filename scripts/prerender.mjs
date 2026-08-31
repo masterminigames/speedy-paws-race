@@ -64,6 +64,41 @@ const ROUTES = [
       '게임에서 진 사람에게 줄 벌칙 아이디어를 강도·상황별로 정리했습니다. 가벼운 것부터 분위기 띄우는 것까지.',
   },
   {
+    path: '/guides/mt-games',
+    module: '/src/pages/GuideMtGames.tsx',
+    title: `MT 게임 추천 — 실내·야외 단체 게임 총정리 - ${SITE}`,
+    description:
+      '신입생부터 오랜 동기까지 모두 어울리는 MT 게임을 실내용·야외용으로 나눠 정리했습니다. 준비물·인원수·진행 팁 포함.',
+  },
+  {
+    path: '/guides/year-end-games',
+    module: '/src/pages/GuideYearEndGames.tsx',
+    title: `송년회·회식 게임 추천 — 분위기 살리는 모임 게임 - ${SITE}`,
+    description:
+      '연말 송년회와 부서 회식에서 분위기를 띄우는 게임 모음. 경품 추첨과 상품·벌칙 활용법까지 정리했습니다.',
+  },
+  {
+    path: '/guides/fair-picker',
+    module: '/src/pages/GuideFairPicker.tsx',
+    title: `제비뽑기·사다리타기 대신 공정하게 정하는 법 - ${SITE}`,
+    description:
+      '발표 순서·당번·벌칙 대상·경품 당첨을 잡음 없이 공정하게. 제비뽑기·사다리타기·룰렛·경주를 비교하고 상황별로 추천합니다.',
+  },
+  {
+    path: '/guides/school-recreation',
+    module: '/src/pages/GuideSchoolRecreation.tsx',
+    title: `학교 레크리에이션·수련회 단체 게임 모음 - ${SITE}`,
+    description:
+      '학급 활동, 수련회, 캠프에서 진행자가 바로 쓸 수 있는 단체 게임. 도구 없이 규칙이 단순한 것들로 골랐습니다.',
+  },
+  {
+    path: '/guides/family-games',
+    module: '/src/pages/GuideFamilyGames.tsx',
+    title: `가족·아이와 함께하는 게임과 벌칙 (명절·모임) - ${SITE}`,
+    description:
+      '명절과 가족 모임에서 어른과 아이가 함께 즐기는 게임. 아이가 상처받지 않는 귀여운 벌칙 아이디어도 담았습니다.',
+  },
+  {
     path: '/terms',
     module: '/src/pages/Terms.tsx',
     title: `이용약관 - ${SITE}`,

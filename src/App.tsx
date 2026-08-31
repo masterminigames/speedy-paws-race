@@ -13,6 +13,11 @@ import Guides from "./pages/Guides";
 import GuideDrinkingGames from "./pages/GuideDrinkingGames";
 import GuideTeamBuilding from "./pages/GuideTeamBuilding";
 import GuidePenaltyIdeas from "./pages/GuidePenaltyIdeas";
+import GuideMtGames from "./pages/GuideMtGames";
+import GuideYearEndGames from "./pages/GuideYearEndGames";
+import GuideFairPicker from "./pages/GuideFairPicker";
+import GuideSchoolRecreation from "./pages/GuideSchoolRecreation";
+import GuideFamilyGames from "./pages/GuideFamilyGames";
 import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +40,11 @@ const App = () => (
           <Route path="/guides/drinking-games" element={<GuideDrinkingGames />} />
           <Route path="/guides/team-building" element={<GuideTeamBuilding />} />
           <Route path="/guides/penalty-ideas" element={<GuidePenaltyIdeas />} />
+          <Route path="/guides/mt-games" element={<GuideMtGames />} />
+          <Route path="/guides/year-end-games" element={<GuideYearEndGames />} />
+          <Route path="/guides/fair-picker" element={<GuideFairPicker />} />
+          <Route path="/guides/school-recreation" element={<GuideSchoolRecreation />} />
+          <Route path="/guides/family-games" element={<GuideFamilyGames />} />
           <Route path="/stats" element={<Stats />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

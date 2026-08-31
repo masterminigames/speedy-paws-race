@@ -41,6 +41,31 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://coffeeracing.co.kr/guides/mt-games</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://coffeeracing.co.kr/guides/year-end-games</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://coffeeracing.co.kr/guides/fair-picker</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://coffeeracing.co.kr/guides/school-recreation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://coffeeracing.co.kr/guides/family-games</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://coffeeracing.co.kr/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
