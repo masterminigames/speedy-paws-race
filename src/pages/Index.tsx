@@ -127,6 +127,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* 모바일 세로 화면에서 가로 회전 안내 */}
+      <div className="landscape-hint">
+        <div className="text-center text-white px-6">
+          <div className="text-7xl mb-4 animate-bounce">📱↻</div>
+          <p className="text-2xl font-bold">화면을 가로로 돌려주세요</p>
+          <p className="text-sm opacity-80 mt-3">경주는 가로 화면에서 훨씬 잘 보여요! 🏁</p>
+        </div>
+      </div>
       <div className="flex-1">
         <RaceTrack
           players={players}

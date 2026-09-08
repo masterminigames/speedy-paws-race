@@ -423,3 +423,20 @@
   }
 
 }
+
+/* 모바일 세로 화면에서 경주를 볼 때 가로 회전 안내 오버레이 */
+.landscape-hint {
+  display: none;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .landscape-hint {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.92);
+  }
+}

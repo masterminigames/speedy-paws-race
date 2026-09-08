@@ -20,9 +20,9 @@ const STONE_APPEAR_POSITION = 80;    // 80% 지점에서 돌멩이 나타남
 const STONE_POSITION = 85;           // 85% 지점에서 충돌
 
 // 배 부스터 설정
-const BOAT_EVENT_PROBABILITY = 0.6;  // 60% 확률로 등장
+const BOAT_EVENT_PROBABILITY = 0.7;  // 70% 확률로 등장
 const BOAT_POSITION = 20;            // 20% 지점에 배치
-const BOAT_EAT_PROBABILITY = 0.6;    // 60% 확률로 먹음
+const BOAT_EAT_PROBABILITY = 0.7;    // 70% 확률로 먹음
 const BOAT_SPEED_MULTIPLIER = 4;     // 4배 속도
 
 const PHOENIX_ANIMAL: Animal = { id: 'phoenix', name: '불사조', emoji: '🐦‍🔥' };
