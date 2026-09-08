@@ -43,14 +43,6 @@ const Index = () => {
     document.documentElement.classList.toggle('swimming-mode', gameMode === 'swimming');
   }, [gameMode]);
 
-  // 모바일에서 경주 화면(달리기/수영)만 90도 회전
-  useEffect(() => {
-    const raceActive =
-      !pettingPlayers && ['countdown', 'racing', 'finished'].includes(gamePhase);
-    document.documentElement.classList.toggle('race-rotate', raceActive);
-    return () => document.documentElement.classList.remove('race-rotate');
-  }, [gamePhase, pettingPlayers]);
-
   const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
     // 고양이 만지기 모드는 경주가 아니라 별도 화면
     if (gameMode === 'petting') {
@@ -134,7 +126,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col race-screen">
+    <div className="min-h-screen flex flex-col">
       <div className="flex-1">
         <RaceTrack
           players={players}
