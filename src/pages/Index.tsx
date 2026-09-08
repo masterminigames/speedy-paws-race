@@ -43,6 +43,14 @@ const Index = () => {
     document.documentElement.classList.toggle('swimming-mode', gameMode === 'swimming');
   }, [gameMode]);
 
+  // 모바일에서 경주 화면(달리기/수영)만 90도 회전
+  useEffect(() => {
+    const raceActive =
+      !pettingPlayers && ['countdown', 'racing', 'finished'].includes(gamePhase);
+    document.documentElement.classList.toggle('race-rotate', raceActive);
+    return () => document.documentElement.classList.remove('race-rotate');
+  }, [gamePhase, pettingPlayers]);
+
   const handleStart = (selectedAnimals: Animal[], penalty: PenaltySettings) => {
     // 고양이 만지기 모드는 경주가 아니라 별도 화면
     if (gameMode === 'petting') {
@@ -126,15 +134,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 모바일 세로 화면에서 가로 회전 안내 */}
-      <div className="landscape-hint">
-        <div className="text-center text-white px-6">
-          <div className="text-7xl mb-4 animate-bounce">📱↻</div>
-          <p className="text-2xl font-bold">화면을 가로로 돌려주세요</p>
-          <p className="text-sm opacity-80 mt-3">경주는 가로 화면에서 훨씬 잘 보여요! 🏁</p>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col race-screen">
       <div className="flex-1">
         <RaceTrack
           players={players}
