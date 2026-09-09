@@ -20,11 +20,12 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// 매 판: 1~N 중 한 명을 균등 확률로 당첨자로 정함.
-// 첫 바퀴에서 그 사람(loserNum번째) 차례에 고양이가 튐.
+// 매 판: 두 바퀴(1~2N번째) 안에서 균등하게 걸림.
+// 걸리는 사람(loserNum)은 각자 1/N로 동일 — 2N개 위치가 각 번호에 2개씩 배정되기 때문.
 function pickRound(playerCount: number) {
-  const loserNum = randomInt(1, playerCount); // 1~N 균등 확률
-  return { loserNum, triggerPet: loserNum };
+  const triggerPet = randomInt(1, playerCount * 2); // 두 바퀴 안, 균등
+  const loserNum = ((triggerPet - 1) % playerCount) + 1;
+  return { loserNum, triggerPet };
 }
 
 // 모바일 진동
