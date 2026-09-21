@@ -423,3 +423,19 @@
   }
 
 }
+
+/* 고만튀 당첨 순간 — 배경 무지개 번쩍번쩍 */
+@keyframes cat-rainbow-flash {
+  0%   { background-color: #ff2d55; }
+  14%  { background-color: #ff9500; }
+  28%  { background-color: #ffe000; }
+  42%  { background-color: #34c759; }
+  57%  { background-color: #00c7be; }
+  71%  { background-color: #007aff; }
+  85%  { background-color: #af52de; }
+  100% { background-color: #ff2d55; }
+}
+
+.cat-rainbow-flash {
+  animation: cat-rainbow-flash 0.45s linear infinite;
+}

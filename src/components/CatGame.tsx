@@ -9,6 +9,20 @@ const CAT_IMG = {
   run: '/cat-run.png', // 걸려서 튀는 모습
 };
 
+// 누를 때마다 랜덤으로 바뀌는 고양이 대사
+const CAT_LINES = [
+  '만져봐라 냥~',
+  '간지럽다냥 ㅎㅎ',
+  '기분 좋다냥',
+  '한 번 더 해보라냥',
+  '화낸다냥…?',
+  '슬슬 위험하다냥',
+  '조심하라냥 😾',
+  '계속 해도 되냥?',
+  '이러다 튄다냥!',
+  '거기 말고 여기다냥',
+];
+
 interface CatGameProps {
   playerCount: number;
   onHome: () => void;
@@ -20,15 +34,19 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// 매 판: 두 바퀴(1~2N번째) 안에서 균등하게 걸림.
-// 걸리는 사람(loserNum)은 각자 1/N로 동일 — 2N개 위치가 각 번호에 2개씩 배정되기 때문.
-function pickRound(playerCount: number) {
-  const triggerPet = randomInt(1, playerCount * 2); // 두 바퀴 안, 균등
-  const loserNum = ((triggerPet - 1) % playerCount) + 1;
-  return { loserNum, triggerPet };
+function randomLine(prev?: string): string {
+  let line = CAT_LINES[randomInt(0, CAT_LINES.length - 1)];
+  if (CAT_LINES.length > 1) {
+    while (line === prev) line = CAT_LINES[randomInt(0, CAT_LINES.length - 1)];
+  }
+  return line;
 }
 
-// 모바일 진동
+// 몇 번째 쓰다듬을 때 튈지 랜덤으로 숨김 (인원수에 비례해 길이 조절)
+function randomThreshold(playerCount: number): number {
+  return randomInt(2, Math.max(4, playerCount * 2));
+}
+
 function triggerHaptics() {
   try {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -39,7 +57,6 @@ function triggerHaptics() {
   }
 }
 
-// 괴성(놀라는 소리) — Web Audio로 즉석 생성
 function playScream() {
   try {
     const AC =
@@ -78,14 +95,13 @@ function playScream() {
 
 export function CatGame({ playerCount, onHome }: CatGameProps) {
   const [pets, setPets] = useState(0);
-  const [round, setRound] = useState(() => pickRound(playerCount));
+  const [threshold, setThreshold] = useState(() => randomThreshold(playerCount));
   const [status, setStatus] = useState<Status>('playing');
+  const [line, setLine] = useState(() => randomLine());
   const [reacting, setReacting] = useState(false);
   const [boltStyle, setBoltStyle] = useState<CSSProperties>({});
   const [useEmoji, setUseEmoji] = useState(false);
   const reactTimer = useRef<ReturnType<typeof setTimeout>>();
-
-  const currentNum = (pets % playerCount) + 1;
 
   // 튀는 애니메이션 (사방팔방)
   useEffect(() => {
@@ -112,14 +128,15 @@ export function CatGame({ playerCount, onHome }: CatGameProps) {
 
   const handlePet = () => {
     if (status !== 'playing') return;
-    const petNumber = pets + 1;
-    if (petNumber === round.triggerPet) {
-      // 걸림! (현재 차례 = round.loserNum) 튀기 + 진동 + 괴성 (클릭 제스처 안에서 실행)
+    const next = pets + 1;
+    if (next >= threshold) {
+      // 걸림! (지금 만진 사람) 튀기 + 진동 + 괴성
       triggerHaptics();
       playScream();
       setStatus('bolting');
     } else {
-      setPets(petNumber);
+      setPets(next);
+      setLine((prev) => randomLine(prev));
       setReacting(true);
       clearTimeout(reactTimer.current);
       reactTimer.current = setTimeout(() => setReacting(false), 450);
@@ -128,8 +145,9 @@ export function CatGame({ playerCount, onHome }: CatGameProps) {
 
   const handleRestart = () => {
     setPets(0);
-    setRound(pickRound(playerCount));
+    setThreshold(randomThreshold(playerCount));
     setStatus('playing');
+    setLine(randomLine());
     setReacting(false);
     setBoltStyle({});
   };
@@ -139,7 +157,7 @@ export function CatGame({ playerCount, onHome }: CatGameProps) {
   const catEmoji =
     status === 'bolting' || status === 'done' ? '🙀' : reacting ? '😸' : '😺';
 
-  const catNode = useEmoji ? (
+  const catImg = useEmoji ? (
     <span className="block text-[7rem] md:text-[9rem] leading-none select-none">{catEmoji}</span>
   ) : (
     <img
@@ -151,78 +169,83 @@ export function CatGame({ playerCount, onHome }: CatGameProps) {
     />
   );
 
+  const caught = status === 'bolting' || status === 'done';
+
   return (
     <div
       className={cn(
-        'relative min-h-screen p-4 flex flex-col items-center overflow-hidden',
-        status === 'done'
-          ? 'bg-gradient-to-b from-red-100 to-orange-200'
-          : 'bg-gradient-to-b from-amber-50 to-orange-100'
+        'relative min-h-screen p-4 flex flex-col items-center overflow-hidden transition-colors',
+        caught ? 'cat-rainbow-flash' : 'bg-gradient-to-b from-amber-50 to-orange-100'
       )}
     >
       {/* Header */}
-      <div className="text-center mt-4 mb-6 z-10">
-        <h1 className="text-2xl md:text-4xl font-bold text-foreground">🐱 고만튀 🐱</h1>
-        <p className="text-muted-foreground mt-1">번갈아 쓰다듬다가 고양이가 튀면 벌칙!</p>
+      <div className="text-center mt-4 mb-4 z-10">
+        <h1
+          className={cn(
+            'text-2xl md:text-4xl font-bold',
+            caught ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]' : 'text-foreground'
+          )}
+        >
+          🐱 고만튀 🐱
+        </h1>
       </div>
 
       {status === 'playing' && (
-        <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-6 z-10">
-          {/* 현재 차례 */}
-          <div className="flex items-center gap-2 bg-card px-6 py-3 rounded-2xl shadow-soft">
-            <span className="text-sm text-muted-foreground">지금은</span>
-            <span className="font-bold text-xl text-primary">{currentNum}번</span>
-            <span className="font-bold text-lg text-foreground">차례!</span>
+        <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-5 z-10">
+          {/* 말풍선 대사 */}
+          <div className="relative">
+            <div className="bg-card px-5 py-3 rounded-2xl shadow-soft border border-border">
+              <span className="font-bold text-lg text-foreground">{line}</span>
+            </div>
+            <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-4 h-4 bg-card border-r border-b border-border rotate-45" />
           </div>
 
-          {/* 고양이 */}
+          {/* 고양이 (탭해서 쓰다듬기) */}
           <button
             onClick={handlePet}
             className="focus:outline-none active:scale-95 transition-transform"
             aria-label="고양이 쓰다듬기"
           >
-            {catNode}
+            {catImg}
           </button>
 
-          <div className="text-center space-y-1">
-            <p className="text-sm text-muted-foreground">
-              쓰다듬은 횟수: <strong className="text-foreground">{pets}</strong>
-            </p>
-            <p className="text-xs text-muted-foreground">언제 튈지 몰라요…</p>
+          {/* 쓰다듬은 횟수 */}
+          <div className="bg-card px-6 py-3 rounded-2xl shadow-soft text-center">
+            <span className="text-sm text-muted-foreground">쓰다듬은 횟수 </span>
+            <strong className="text-lg text-foreground">{pets}</strong>
+            <p className="text-xs text-muted-foreground mt-0.5">고양이를 눌러서 쓰다듬어요 · 언제 튈지 몰라요!</p>
           </div>
-
-          <Button
-            onClick={handlePet}
-            size="lg"
-            className="text-xl px-10 py-6 rounded-2xl shadow-button bg-orange-500 hover:bg-orange-600 text-white"
-          >
-            🖐️ 쓰다듬기
-          </Button>
         </div>
       )}
 
       {status === 'bolting' && (
         <div className="flex-1 w-full flex flex-col items-center justify-center z-10">
-          <div style={{ transition: 'transform 0.09s linear', ...boltStyle }}>{catNode}</div>
-          <p className="mt-8 text-2xl font-bold text-destructive animate-pulse">고양이가 튀었다! 💨</p>
+          <div style={{ transition: 'transform 0.09s linear', ...boltStyle }}>{catImg}</div>
+          <p className="mt-8 text-3xl font-black text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] animate-pulse">
+            고양이가 튀었다! 💨
+          </p>
         </div>
       )}
 
       {status === 'done' && (
         <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-6 z-10">
-          {catNode}
-          <h2 className="text-3xl font-bold text-destructive">고만튀! 😱</h2>
-
-          <div className="text-center p-6 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/20 to-destructive/5 animate-pulse">
-            <div className="text-5xl mb-2">💣</div>
-            <div className="font-bold text-destructive text-2xl">{round.loserNum}번 벌칙 당첨!</div>
+          {catImg}
+          <div className="text-center bg-white/90 backdrop-blur rounded-2xl px-8 py-6 shadow-xl">
+            <div className="text-5xl mb-2">💥</div>
+            <h2 className="text-3xl font-black text-destructive">고만튀! 😱</h2>
+            <p className="mt-2 text-lg font-bold text-foreground">지금 만진 사람 벌칙 당첨!</p>
           </div>
 
           <div className="flex gap-3">
             <Button onClick={handleRestart} size="lg" className="text-lg px-8 py-4 rounded-2xl shadow-button">
               🔄 다시 하기
             </Button>
-            <Button onClick={onHome} size="lg" variant="outline" className="text-lg px-8 py-4 rounded-2xl">
+            <Button
+              onClick={onHome}
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-4 rounded-2xl bg-white/90"
+            >
               🏠 첫화면으로
             </Button>
           </div>
