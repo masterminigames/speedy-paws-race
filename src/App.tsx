@@ -18,6 +18,14 @@ import GuideYearEndGames from "./pages/GuideYearEndGames";
 import GuideFairPicker from "./pages/GuideFairPicker";
 import GuideSchoolRecreation from "./pages/GuideSchoolRecreation";
 import GuideFamilyGames from "./pages/GuideFamilyGames";
+import GuideIcebreakerQuestions from "./pages/GuideIcebreakerQuestions";
+import GuideBalanceGame from "./pages/GuideBalanceGame";
+import GuideDrinkingGameRules from "./pages/GuideDrinkingGameRules";
+import GuideCoupleGames from "./pages/GuideCoupleGames";
+import GuideCampingGames from "./pages/GuideCampingGames";
+import GuideKidsBirthday from "./pages/GuideKidsBirthday";
+import GuideOfficeWorkshop from "./pages/GuideOfficeWorkshop";
+import GuideNoraebangGames from "./pages/GuideNoraebangGames";
 import Stats from "./pages/Stats";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +53,14 @@ const App = () => (
           <Route path="/guides/fair-picker" element={<GuideFairPicker />} />
           <Route path="/guides/school-recreation" element={<GuideSchoolRecreation />} />
           <Route path="/guides/family-games" element={<GuideFamilyGames />} />
+          <Route path="/guides/icebreaker-questions" element={<GuideIcebreakerQuestions />} />
+          <Route path="/guides/balance-game" element={<GuideBalanceGame />} />
+          <Route path="/guides/drinking-game-rules" element={<GuideDrinkingGameRules />} />
+          <Route path="/guides/couple-games" element={<GuideCoupleGames />} />
+          <Route path="/guides/camping-games" element={<GuideCampingGames />} />
+          <Route path="/guides/kids-birthday" element={<GuideKidsBirthday />} />
+          <Route path="/guides/office-workshop" element={<GuideOfficeWorkshop />} />
+          <Route path="/guides/noraebang-games" element={<GuideNoraebangGames />} />
           <Route path="/stats" element={<Stats />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

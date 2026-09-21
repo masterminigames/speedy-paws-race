@@ -99,6 +99,62 @@ const ROUTES = [
       '명절과 가족 모임에서 어른과 아이가 함께 즐기는 게임. 아이가 상처받지 않는 귀여운 벌칙 아이디어도 담았습니다.',
   },
   {
+    path: '/guides/icebreaker-questions',
+    module: '/src/pages/GuideIcebreakerQuestions.tsx',
+    title: `아이스브레이킹 질문 모음 40선 — 어색함 깨는 대화 주제 - ${SITE}`,
+    description:
+      '처음 만난 자리에서 어색함을 푸는 대화 질문 40개를 가벼운 것부터 깊은 것까지 상황별로 모았습니다.',
+  },
+  {
+    path: '/guides/balance-game',
+    module: '/src/pages/GuideBalanceGame.tsx',
+    title: `밸런스 게임 질문 모음 50선 — 극과 극 양자택일 - ${SITE}`,
+    description:
+      '정답이 없어 누구나 참여하는 밸런스 게임 질문 50개. 일상·연애·극한 상황·술자리용까지 주제별 정리.',
+  },
+  {
+    path: '/guides/drinking-game-rules',
+    module: '/src/pages/GuideDrinkingGameRules.tsx',
+    title: `인기 술게임 규칙 총정리 — 바니바니부터 눈치게임까지 - ${SITE}`,
+    description:
+      '바니바니, 아파트, 눈치게임, 369, 손병호, 딸기게임 등 인기 술게임의 규칙과 진행 팁을 한 번에 정리했습니다.',
+  },
+  {
+    path: '/guides/couple-games',
+    module: '/src/pages/GuideCoupleGames.tsx',
+    title: `커플이 하기 좋은 게임 — 데이트가 심심할 때 - ${SITE}`,
+    description:
+      '집 데이트·여행·기념일에 둘이서 즐기는 대화 게임과 가벼운 내기, 메뉴·코스 정하기 팁을 모았습니다.',
+  },
+  {
+    path: '/guides/camping-games',
+    module: '/src/pages/GuideCampingGames.tsx',
+    title: `캠핑·여행 가서 하는 게임 모음 - ${SITE}`,
+    description:
+      '모닥불 앞, 펜션 거실, 차 안 이동 시간까지 도구 없이 즐기는 여행용 게임을 상황별로 정리했습니다.',
+  },
+  {
+    path: '/guides/kids-birthday',
+    module: '/src/pages/GuideKidsBirthday.tsx',
+    title: `어린이 생일파티 게임 모음 — 집에서 신나게 - ${SITE}`,
+    description:
+      '규칙이 쉽고 안 다치고 다 함께 웃는 어린이 생일파티 게임과 귀여운 벌칙 아이디어를 모았습니다.',
+  },
+  {
+    path: '/guides/office-workshop',
+    module: '/src/pages/GuideOfficeWorkshop.tsx',
+    title: `직장인 회의·워크숍 아이스브레이커 — 3분이면 충분 - ${SITE}`,
+    description:
+      '워크숍·팀 회의·신입 환영 자리에서 3~5분이면 끝나는 아이스브레이커로 참여를 끌어올리는 방법.',
+  },
+  {
+    path: '/guides/noraebang-games',
+    module: '/src/pages/GuideNoraebangGames.tsx',
+    title: `노래방 게임 & 벌칙 모음 — 2차가 즐거워지는 - ${SITE}`,
+    description:
+      '랜덤 선곡, 이어 부르기, 점수 내기 등 노래방을 끝까지 즐겁게 만드는 게임과 벌칙 아이디어를 모았습니다.',
+  },
+  {
     path: '/terms',
     module: '/src/pages/Terms.tsx',
     title: `이용약관 - ${SITE}`,
